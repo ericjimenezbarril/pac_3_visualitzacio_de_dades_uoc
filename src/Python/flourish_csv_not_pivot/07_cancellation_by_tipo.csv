@@ -1,0 +1,11 @@
+tipo,Status,count,percentage
+package,Canceled,134,33.67
+package,Not canceled,264,66.33
+rest,Canceled,1743,36.35
+rest,Not canceled,3052,63.65
+weekend,Canceled,1861,27.34
+weekend,Not canceled,4945,72.66
+work,Canceled,19360,38.34
+work,Not canceled,31130,61.66
+work+rest,Canceled,20911,38.09
+work+rest,Not canceled,33992,61.91

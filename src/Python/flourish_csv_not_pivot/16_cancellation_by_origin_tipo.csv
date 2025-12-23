@@ -1,0 +1,31 @@
+origin,tipo,Status,count,percentage
+International,package,Canceled,80,26.94
+International,package,Not canceled,217,73.06
+Portugal,package,Canceled,54,53.47
+Portugal,package,Not canceled,47,46.53
+International,rest,Canceled,830,24.11
+International,rest,Not canceled,2612,75.89
+Portugal,rest,Canceled,913,67.48
+Portugal,rest,Not canceled,440,32.52
+International,weekend,Canceled,689,18.23
+International,weekend,Not canceled,3091,81.77
+Portugal,weekend,Canceled,1172,38.73
+Portugal,weekend,Not canceled,1854,61.27
+International,work,Canceled,5832,22.53
+International,work,Not canceled,20058,77.47
+Portugal,work,Canceled,13528,54.99
+Portugal,work,Not canceled,11072,45.01
+International,work+rest,Canceled,9248,25.02
+International,work+rest,Not canceled,27711,74.98
+Portugal,work+rest,Canceled,11663,65.0
+Portugal,work+rest,Not canceled,6281,35.0
+Total,package,Canceled,134,33.67
+Total,package,Not canceled,264,66.33
+Total,rest,Canceled,1743,36.35
+Total,rest,Not canceled,3052,63.65
+Total,weekend,Canceled,1861,27.34
+Total,weekend,Not canceled,4945,72.66
+Total,work,Canceled,19360,38.34
+Total,work,Not canceled,31130,61.66
+Total,work+rest,Canceled,20911,38.09
+Total,work+rest,Not canceled,33992,61.91

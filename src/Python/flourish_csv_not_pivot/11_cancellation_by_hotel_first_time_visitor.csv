@@ -1,0 +1,9 @@
+hotel,first_time_visitor,Status,count,percentage
+City Hotel,First-time visitor,Canceled,32868,42.84
+City Hotel,First-time visitor,Not canceled,43854,57.16
+City Hotel,Returning customer,Canceled,104,7.61
+City Hotel,Returning customer,Not canceled,1263,92.39
+Resort Hotel,First-time visitor,Canceled,10959,29.36
+Resort Hotel,First-time visitor,Not canceled,26371,70.64
+Resort Hotel,Returning customer,Canceled,78,3.95
+Resort Hotel,Returning customer,Not canceled,1895,96.05

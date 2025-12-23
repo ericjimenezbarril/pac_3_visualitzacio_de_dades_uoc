@@ -1,0 +1,16 @@
+Origin,Trip Type,Canceled,Not Canceled,Canceled %,Not Canceled %
+International,package,80,217,26.94,73.06
+Portugal,package,54,47,53.47,46.53
+International,rest,830,2612,24.11,75.89
+Portugal,rest,913,440,67.48,32.52
+International,weekend,689,3091,18.23,81.77
+Portugal,weekend,1172,1854,38.73,61.27
+International,work,5832,20058,22.53,77.47
+Portugal,work,13528,11072,54.99,45.01
+International,work+rest,9248,27711,25.02,74.98
+Portugal,work+rest,11663,6281,65.0,35.0
+Total,package,134,264,33.67,66.33
+Total,rest,1743,3052,36.35,63.65
+Total,weekend,1861,4945,27.34,72.66
+Total,work,19360,31130,38.34,61.66
+Total,work+rest,20911,33992,38.09,61.91

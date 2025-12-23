@@ -1,0 +1,21 @@
+Hotel,Origin,Country,Canceled,Not Canceled,Canceled %,Not Canceled %
+City Hotel,International,DEU,1072,4982,17.71,82.29
+City Hotel,International,ESP,1326,3254,28.95,71.05
+City Hotel,International,FRA,1721,7041,19.64,80.36
+City Hotel,International,GBR,1560,3733,29.47,70.53
+City Hotel,Portugal,PRT,19971,9980,66.68,33.32
+Resort Hotel,International,DEU,146,1046,12.25,87.75
+Resort Hotel,International,ESP,850,3058,21.75,78.25
+Resort Hotel,International,FRA,211,1386,13.21,86.79
+Resort Hotel,International,GBR,891,5866,13.19,86.81
+Resort Hotel,Portugal,PRT,7359,9714,43.1,56.9
+City Hotel,Total,DEU,1072,4982,17.71,82.29
+City Hotel,Total,ESP,1326,3254,28.95,71.05
+City Hotel,Total,FRA,1721,7041,19.64,80.36
+City Hotel,Total,GBR,1560,3733,29.47,70.53
+City Hotel,Total,PRT,19971,9980,66.68,33.32
+Resort Hotel,Total,DEU,146,1046,12.25,87.75
+Resort Hotel,Total,ESP,850,3058,21.75,78.25
+Resort Hotel,Total,FRA,211,1386,13.21,86.79
+Resort Hotel,Total,GBR,891,5866,13.19,86.81
+Resort Hotel,Total,PRT,7359,9714,43.1,56.9

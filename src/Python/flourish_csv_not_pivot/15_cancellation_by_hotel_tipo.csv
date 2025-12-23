@@ -1,0 +1,21 @@
+hotel,tipo,Status,count,percentage
+City Hotel,package,Canceled,62,41.89
+City Hotel,package,Not canceled,86,58.11
+City Hotel,rest,Canceled,613,57.45
+City Hotel,rest,Not canceled,454,42.55
+City Hotel,weekend,Canceled,1445,31.81
+City Hotel,weekend,Not canceled,3097,68.19
+City Hotel,work,Canceled,16163,43.82
+City Hotel,work,Not canceled,20720,56.18
+City Hotel,work+rest,Canceled,14689,41.44
+City Hotel,work+rest,Not canceled,20760,58.56
+Resort Hotel,package,Canceled,72,28.8
+Resort Hotel,package,Not canceled,178,71.2
+Resort Hotel,rest,Canceled,1130,30.31
+Resort Hotel,rest,Not canceled,2598,69.69
+Resort Hotel,weekend,Canceled,416,18.37
+Resort Hotel,weekend,Not canceled,1848,81.63
+Resort Hotel,work,Canceled,3197,23.5
+Resort Hotel,work,Not canceled,10410,76.5
+Resort Hotel,work+rest,Canceled,6222,31.98
+Resort Hotel,work+rest,Not canceled,13232,68.02

@@ -1,0 +1,23 @@
+origin,previous_cancellations_group,Status,count,percentage
+International,0 cancellations,Canceled,16408,23.42
+International,0 cancellations,Not canceled,53643,76.58
+Portugal,0 cancellations,Canceled,21694,52.98
+Portugal,0 cancellations,Not canceled,19256,47.02
+International,1–2 cancellations,Canceled,233,87.59
+International,1–2 cancellations,Not canceled,33,12.41
+Portugal,1–2 cancellations,Canceled,5488,94.05
+Portugal,1–2 cancellations,Not canceled,347,5.95
+Portugal,3–5 cancellations,Canceled,25,28.41
+Portugal,3–5 cancellations,Not canceled,63,71.59
+International,6+ cancellations,Canceled,38,74.51
+International,6+ cancellations,Not canceled,13,25.49
+Portugal,6+ cancellations,Canceled,123,81.46
+Portugal,6+ cancellations,Not canceled,28,18.54
+Total,0 cancellations,Canceled,38102,34.33
+Total,0 cancellations,Not canceled,72899,65.67
+Total,1–2 cancellations,Canceled,5721,93.77
+Total,1–2 cancellations,Not canceled,380,6.23
+Total,3–5 cancellations,Canceled,25,28.41
+Total,3–5 cancellations,Not canceled,63,71.59
+Total,6+ cancellations,Canceled,161,79.7
+Total,6+ cancellations,Not canceled,41,20.3

@@ -1,0 +1,13 @@
+Hotel,Origin,first_time_visitor,Canceled,Not Canceled,Canceled %,Not Canceled %
+City Hotel,International,First-time visitor,12984,34850,27.14,72.86
+City Hotel,Portugal,First-time visitor,19884,9004,68.83,31.17
+City Hotel,International,Returning customer,17,287,5.59,94.41
+City Hotel,Portugal,Returning customer,87,976,8.18,91.82
+Resort Hotel,International,First-time visitor,3658,18158,16.77,83.23
+Resort Hotel,Portugal,First-time visitor,7301,8213,47.06,52.94
+Resort Hotel,International,Returning customer,20,394,4.83,95.17
+Resort Hotel,Portugal,Returning customer,58,1501,3.72,96.28
+City Hotel,Total,First-time visitor,32868,43854,42.84,57.16
+City Hotel,Total,Returning customer,104,1263,7.61,92.39
+Resort Hotel,Total,First-time visitor,10959,26371,29.36,70.64
+Resort Hotel,Total,Returning customer,78,1895,3.95,96.05

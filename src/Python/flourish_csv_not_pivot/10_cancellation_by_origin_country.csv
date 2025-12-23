@@ -1,0 +1,21 @@
+origin,country,Status,count,percentage
+International,DEU,Canceled,1218,16.81
+International,DEU,Not canceled,6028,83.19
+International,ESP,Canceled,2176,25.64
+International,ESP,Not canceled,6312,74.36
+International,FRA,Canceled,1932,18.65
+International,FRA,Not canceled,8427,81.35
+International,GBR,Canceled,2451,20.34
+International,GBR,Not canceled,9599,79.66
+Portugal,PRT,Canceled,27330,58.12
+Portugal,PRT,Not canceled,19694,41.88
+Total,DEU,Canceled,1218,16.81
+Total,DEU,Not canceled,6028,83.19
+Total,ESP,Canceled,2176,25.64
+Total,ESP,Not canceled,6312,74.36
+Total,FRA,Canceled,1932,18.65
+Total,FRA,Not canceled,8427,81.35
+Total,GBR,Canceled,2451,20.34
+Total,GBR,Not canceled,9599,79.66
+Total,PRT,Canceled,27330,58.12
+Total,PRT,Not canceled,19694,41.88

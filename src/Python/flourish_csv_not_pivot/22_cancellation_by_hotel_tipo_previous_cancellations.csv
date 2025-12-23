@@ -1,0 +1,59 @@
+hotel,tipo,previous_cancellations_group,Status,count,percentage
+City Hotel,package,0 cancellations,Canceled,59,40.69
+City Hotel,package,0 cancellations,Not canceled,86,59.31
+City Hotel,package,1–2 cancellations,Canceled,3,100.0
+City Hotel,rest,0 cancellations,Canceled,584,56.37
+City Hotel,rest,0 cancellations,Not canceled,452,43.63
+City Hotel,rest,1–2 cancellations,Canceled,29,100.0
+City Hotel,rest,3–5 cancellations,Not canceled,2,100.0
+City Hotel,weekend,0 cancellations,Canceled,1262,29.17
+City Hotel,weekend,0 cancellations,Not canceled,3065,70.83
+City Hotel,weekend,1–2 cancellations,Canceled,181,87.86
+City Hotel,weekend,1–2 cancellations,Not canceled,25,12.14
+City Hotel,weekend,3–5 cancellations,Canceled,1,16.67
+City Hotel,weekend,3–5 cancellations,Not canceled,5,83.33
+City Hotel,weekend,6+ cancellations,Canceled,1,33.33
+City Hotel,weekend,6+ cancellations,Not canceled,2,66.67
+City Hotel,work,0 cancellations,Canceled,13338,39.41
+City Hotel,work,0 cancellations,Not canceled,20504,60.59
+City Hotel,work,1–2 cancellations,Canceled,2810,94.71
+City Hotel,work,1–2 cancellations,Not canceled,157,5.29
+City Hotel,work,3–5 cancellations,Canceled,5,13.89
+City Hotel,work,3–5 cancellations,Not canceled,31,86.11
+City Hotel,work,6+ cancellations,Canceled,10,26.32
+City Hotel,work,6+ cancellations,Not canceled,28,73.68
+City Hotel,work+rest,0 cancellations,Canceled,12743,38.11
+City Hotel,work+rest,0 cancellations,Not canceled,20694,61.89
+City Hotel,work+rest,1–2 cancellations,Canceled,1926,98.17
+City Hotel,work+rest,1–2 cancellations,Not canceled,36,1.83
+City Hotel,work+rest,3–5 cancellations,Canceled,2,9.52
+City Hotel,work+rest,3–5 cancellations,Not canceled,19,90.48
+City Hotel,work+rest,6+ cancellations,Canceled,18,62.07
+City Hotel,work+rest,6+ cancellations,Not canceled,11,37.93
+Resort Hotel,package,0 cancellations,Canceled,71,28.51
+Resort Hotel,package,0 cancellations,Not canceled,178,71.49
+Resort Hotel,package,1–2 cancellations,Canceled,1,100.0
+Resort Hotel,rest,0 cancellations,Canceled,1048,28.8
+Resort Hotel,rest,0 cancellations,Not canceled,2591,71.2
+Resort Hotel,rest,1–2 cancellations,Canceled,79,91.86
+Resort Hotel,rest,1–2 cancellations,Not canceled,7,8.14
+Resort Hotel,rest,3–5 cancellations,Canceled,3,100.0
+Resort Hotel,weekend,0 cancellations,Canceled,353,16.18
+Resort Hotel,weekend,0 cancellations,Not canceled,1829,83.82
+Resort Hotel,weekend,1–2 cancellations,Canceled,37,66.07
+Resort Hotel,weekend,1–2 cancellations,Not canceled,19,33.93
+Resort Hotel,weekend,6+ cancellations,Canceled,26,100.0
+Resort Hotel,work,0 cancellations,Canceled,2897,21.95
+Resort Hotel,work,0 cancellations,Not canceled,10301,78.05
+Resort Hotel,work,1–2 cancellations,Canceled,250,70.42
+Resort Hotel,work,1–2 cancellations,Not canceled,105,29.58
+Resort Hotel,work,3–5 cancellations,Canceled,7,63.64
+Resort Hotel,work,3–5 cancellations,Not canceled,4,36.36
+Resort Hotel,work,6+ cancellations,Canceled,43,100.0
+Resort Hotel,work+rest,0 cancellations,Canceled,5747,30.33
+Resort Hotel,work+rest,0 cancellations,Not canceled,13199,69.67
+Resort Hotel,work+rest,1–2 cancellations,Canceled,405,92.89
+Resort Hotel,work+rest,1–2 cancellations,Not canceled,31,7.11
+Resort Hotel,work+rest,3–5 cancellations,Canceled,7,77.78
+Resort Hotel,work+rest,3–5 cancellations,Not canceled,2,22.22
+Resort Hotel,work+rest,6+ cancellations,Canceled,63,100.0

@@ -1,0 +1,5 @@
+first_time_visitor,Status,count,percentage
+First-time visitor,Canceled,43827,38.43
+First-time visitor,Not canceled,70225,61.57
+Returning customer,Canceled,182,5.45
+Returning customer,Not canceled,3158,94.55

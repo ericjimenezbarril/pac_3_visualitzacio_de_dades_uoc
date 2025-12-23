@@ -1,0 +1,21 @@
+hotel,country,Status,count,percentage
+City Hotel,DEU,Canceled,1072,17.71
+City Hotel,DEU,Not canceled,4982,82.29
+City Hotel,ESP,Canceled,1326,28.95
+City Hotel,ESP,Not canceled,3254,71.05
+City Hotel,FRA,Canceled,1721,19.64
+City Hotel,FRA,Not canceled,7041,80.36
+City Hotel,GBR,Canceled,1560,29.47
+City Hotel,GBR,Not canceled,3733,70.53
+City Hotel,PRT,Canceled,19971,66.68
+City Hotel,PRT,Not canceled,9980,33.32
+Resort Hotel,DEU,Canceled,146,12.25
+Resort Hotel,DEU,Not canceled,1046,87.75
+Resort Hotel,ESP,Canceled,850,21.75
+Resort Hotel,ESP,Not canceled,3058,78.25
+Resort Hotel,FRA,Canceled,211,13.21
+Resort Hotel,FRA,Not canceled,1386,86.79
+Resort Hotel,GBR,Canceled,891,13.19
+Resort Hotel,GBR,Not canceled,5866,86.81
+Resort Hotel,PRT,Canceled,7359,43.1
+Resort Hotel,PRT,Not canceled,9714,56.9

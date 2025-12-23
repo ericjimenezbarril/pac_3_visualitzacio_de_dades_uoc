@@ -1,0 +1,1961 @@
+---
+title: "Visual analytics of hotel bookings data"
+author: "Julià Minguillón"
+date: "April 2025"
+output:
+  html_document: default
+  pdf_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+NOTE: this tutorial uses R + RStudio + some R packages to show the potential
+of using data visualization for inspecting and analyzing a data set. We strongly
+recommend you to explore the following links:
+
+1) RStudio: https://posit.co/downloads/
+2) ggplot2: https://ggplot2.tidyverse.org/
+3) extensions: https://exts.ggplot2.tidyverse.org/gallery/
+4) ggmosaic: this package has been removed from CRAN, it is necessary to install
+and older version:
+
+Download and install RTools from "https://cran.rstudio.com/bin/windows/Rtools/rtools45/rtools.html"
+
+Download ggmosaic running install.packages( "ggmosaic", repos = c("https://haleyjeppson.r-universe.dev", "https://cloud.r-project.org")))
+
+## Load packages
+
+```{r packages}
+library("ggmosaic")
+library("ggplot2")
+library("fitdistrplus")
+library("MASS")
+library("survival")
+library("ggstatsplot")
+library("tidyverse")
+library("dplyr")
+library("lubridate")
+library(patchwork)
+```
+
+
+## Data loading and dimensions (N x M)
+
+### Pre-Analysis: Objectives and Research Questions
+
+Before diving into the data, let's establish what we aim to discover from this hotel bookings dataset. Our analysis will focus on:
+
+1. **Data Quality Assessment**: Identify and handle outliers, missing values, and data inconsistencies that could affect our analysis
+2. **Booking Patterns**: Understand when and how customers book hotels (seasonality, lead times, booking channels)
+3. **Customer Segmentation**: Analyze differences between customer groups (by country, hotel type, trip purpose)
+4. **Cancellation Behavior**: Investigate factors that influence cancellation rates
+5. **Pricing Analysis**: Explore price distributions and their relationship with booking characteristics
+6. **Operational Insights**: Identify patterns that could help improve hotel operations and revenue management
+
+We expect to find interesting patterns such as:
+- Seasonal variations in booking behavior
+- Differences between domestic (Portuguese) and international tourists
+- Relationship between booking lead time and cancellation rates
+- Price sensitivity across different customer segments
+- Operational variables that might indicate booking quality or customer satisfaction
+
+We read the dataset in CSV format, with 119,390 rows y 32 columns:
+
+```{r load data}
+x=read.csv("../../data/hotel_bookings.csv", stringsAsFactors = T)
+dim(x)
+```
+
+
+## Data cleansing
+
+First, we'll inspect the data using the summary() function included in R.  You 
+can find an explanation of each variable in the article that describes this 
+dataset in detail, although the variable names are pretty much self-explanatory:
+
+```{r summary, echo=FALSE}
+summary(x)
+```
+
+
+# Numerical variables
+
+Some unexpected (outliers?) values for several variables can be observed.
+For instance:
+
+1) A maximum of 55 in 'adults'
+2) A maximum of 10 in 'children' (including also missing values)
+3) A maximum of 10 in 'babies'
+4) Negative values in the average daily rate ('adr') or very high
+
+Let's visualize the histogram of the variable 'adults', with at least 55 
+breaks in the histogram, using the function hist() in R:
+
+```{r hist_adults}
+hist(x$adults,breaks=55)
+```
+
+
+It can be observed that the histogram shows no bars around the value 55, 
+given that this is a very large set and probably it's only one or a few cases. 
+In these cases, to analyze the extreme values of a variable, the values of the 
+variable in question can be represented graphically as follows, ordering and 
+plotting the data (if they are numerical, as in this case):
+
+```{r plot_adults}
+plot(sort(x$adults))
+grid()
+```
+
+
+The 'Index' represents the position of the element once it's sorted, but we're 
+more interested in the Y axis, as we can see that some elements have values 
+of 10 or higher. Since this is an integer variable with a limited set of 
+possible values, we can use table() to visualize them:
+
+```{r table_adults}
+table(x$adults)
+```
+
+
+As you can see, there's one reservation for 10 adults, two for 20 adults, 
+and so on, up to one for 55 adults! Without going into further detail, we'll 
+remove all rows with reservations for 10 or more adults:
+
+```{r clean_adults}
+x=x[x$adults<10,]
+```
+
+
+EXERCISE: Repeat this process with variables 'children' and 'babies'. Try also
+to change the threshold to less than 5 instead of 10. 
+
+### Children and babies analysis
+
+Now let's analyze the 'children' variable following the same methodology:
+
+```{r analysis_children}
+# Analyze children variable
+hist(x$children, breaks=20, main="Histogram of Children", xlab="Number of children")
+```
+
+
+Let's visualize the sorted values to detect outliers:
+
+```{r plot_children}
+plot(sort(x$children))
+grid()
+```
+
+
+And check the frequency table:
+
+```{r table_children}
+table(x$children)
+```
+
+
+As we can see, there are some extreme values. Let's clean the data by removing reservations with 4 or more children:
+
+```{r clean_children}
+# First, impute any NA values in children with 0 (missing children means no children)
+x[is.na(x$children),'children']=0
+x=x[x$children<4,]
+```
+
+
+Now let's do the same analysis for the 'babies' variable:
+
+```{r analysis_babies}
+# Analyze babies variable
+hist(x$babies, breaks=20, main="Histogram of Babies", xlab="Number of babies")
+```
+
+
+Visualize sorted values:
+
+```{r plot_babies}
+plot(sort(x$babies))
+grid()
+```
+
+
+Check the frequency table:
+
+```{r table_babies}
+table(x$babies)
+```
+
+
+The majority of reservations have 0 babies, but there are some with up to 10. Let's clean by removing reservations with 3 or more babies:
+
+```{r clean_babies}
+# First, impute any NA values in babies with 0 (missing babies means no babies)
+x[is.na(x$babies),'babies']=0
+x=x[x$babies<3,]
+```
+
+
+The histogram of the 'adr' variable (average daily rate) presents the same 
+problem as the 'adults' variable, so we will simply create a graph with the 
+ordered values again:
+
+```{r plot_adr}
+plot(sort(x$adr))
+grid()
+```
+
+
+In this case, we observe that only one value is significantly higher than the 
+rest. We consider it an outlier and eliminate it, as well as the negative 
+values which have no a clear explanation, although we keep the 0 values:
+
+```{r clean_adr}
+x=x[x$adr>=0 & x$adr<1000,]
+```
+
+
+The histogram now provides us with some relevant information. We draw it using
+the ggplot2 package, which offers many more options than hist():
+
+```{r hist_adr}
+ggplot(data=x, aes(x=adr)) + 
+  geom_histogram(bins=55, colour="black", fill = "lightgray") +
+  theme_light()
+```
+
+
+EXERCISE: improve the graph to make axis, title, etc. more adequate.
+
+### Graph improvement
+
+In response to the exercise, let's improve the ADR histogram with better labels and formatting:
+
+```{r improved_hist_adr}
+ggplot(data=x, aes(x=adr)) + 
+  geom_histogram(bins=55, colour="black", fill = "steelblue", alpha=0.7) +
+  labs(title="Distribution of Average Daily Rate (ADR)",
+       subtitle="Hotel bookings dataset after data cleansing",
+       x="Average Daily Rate (€)",
+       y="Frequency") +
+  theme_light() +
+  theme(plot.title = element_text(size=14, face="bold"),
+        plot.subtitle = element_text(size=10),
+        axis.title = element_text(size=12))
+```
+
+
+We can see that there is a set of approximately 2,000 zero values, which could
+be analyzed separately, for example. There are R packages that help us estimate
+this distribution and the parameters that determine it visually, such as the 
+fitdistrplus package, which provides the descdist() function (caution, slow!):
+
+```{r descdist}
+require(fitdistrplus)
+descdist(x$adr,boot=1000)
+```
+
+
+As you can see, the real data (observations, a colored dot) and the simulated
+data (in other color) approximate what a lognormal distribution might look like. 
+However, to experiment with the cleanest possible data set, we will:
+
+1) remove 0-day stays
+2) remove 0-cost stays
+3) remove stays with no guests
+4) replace the NAs in the children variable with 0 (already done before)
+
+```{r data_cleansing}
+x[is.na(x$children),'children']=0
+x=x[x$adr>0 & 
+    (x$stays_in_week_nights+x$stays_in_weekend_nights)>0 & 
+    (x$adults+x$children+x$babies)>0 & 
+    !is.na(x$children),]
+```
+
+
+### Analysis of Additional Variables with Potential Extreme Values
+
+Beyond the basic guest count variables, several other numerical variables in the dataset may contain extreme values or outliers that could affect our analysis. Let's systematically examine variables related to booking behavior, customer history, and operational metrics.
+
+#### Lead Time Analysis
+
+Lead time (the number of days between booking and arrival) is crucial for revenue management. Let's examine its distribution:
+
+```{r analysis_lead_time}
+# First, check for missing values
+sum(is.na(x$lead_time))
+
+# Visualize the distribution
+ggplot(data=x, aes(x=lead_time)) + 
+  geom_histogram(bins=100, colour="black", fill="steelblue", alpha=0.7) +
+  labs(title="Distribution of Lead Time",
+       subtitle="Days between booking and arrival",
+       x="Lead Time (days)",
+       y="Frequency") +
+  theme_light()
+
+# Check for extreme values
+plot(sort(x$lead_time))
+grid()
+abline(h=quantile(x$lead_time, 0.99, na.rm=T), col="red", lty=2)
+```
+
+
+Let's examine the extreme values:
+
+```{r extreme_lead_time}
+# Check the maximum and high percentiles
+summary(x$lead_time)
+quantile(x$lead_time, c(0.95, 0.99, 0.999, 0.9999, 0.99999), na.rm=T)
+
+# Count bookings with very long lead times (>1 year)
+sum(x$lead_time > 365, na.rm=T)
+```
+
+
+Very long lead times (>365 days) might represent group bookings or special events. We'll keep them but note them for further analysis. However, it seems that we do have an outlier value, which is that value 709, so we remove it to avoid analysis errors.
+
+```{r}
+x=x[x$lead_time<700,]
+```
+
+
+#### Stays in Week Nights Analysis
+
+```{r analysis_week_nights}
+# Check distribution
+ggplot(data=x, aes(x=stays_in_week_nights)) + 
+  geom_histogram(bins=50, colour="black", fill="coral", alpha=0.7) +
+  labs(title="Distribution of Week Nights Stayed",
+       x="Number of Week Nights",
+       y="Frequency") +
+  theme_light()
+
+# Check for extreme values
+plot(sort(x$stays_in_week_nights))
+grid()
+
+# Examine frequency table
+table(x$stays_in_week_nights)
+```
+
+
+Most stays are short (1-3 nights), but some extend to 2+ weeks. These long stays might represent extended business trips or long-term rentals.
+
+The number of nights stayed at the hotel is a discrete quantitative variable with a clear natural ordering and direct interpretability. Although the distribution is right-skewed and includes a small number of long stays, these observations do not correspond to data errors or implausible values, but rather to valid long-stay bookings (e.g., extended vacations or business-related stays).
+
+For this reason, no observations were removed based solely on statistical outlier detection criteria, and the variable was not transformed into a categorical factor, as doing so would result in a loss of quantitative information.
+
+To support data storytelling and improve interpretability in descriptive analyses, an additional categorical variable was created by grouping the number of nights into meaningful stay-length categories. This approach preserves the original numerical variable for analytical purposes while providing an interpretable grouping suitable for visualization and narrative comparison.
+
+```{r}
+x$stays_in_week_nights_group <- cut(
+  x$stays_in_week_nights,
+  breaks = c(-1, 0, 2, 5, 10, Inf),
+  labels = c(
+    "0 nights",
+    "1–2 nights",
+    "3–5 nights",
+    "6–10 nights",
+    "10+ nights"
+  )
+)
+
+table(x$stays_in_week_nights_group, useNA = "ifany")
+```
+
+
+The grouped length-of-stay variable shows that most bookings correspond to short stays. Reservations of **1–2 nights (63,092)** and **3–5 nights (42,701)** dominate the dataset, while **6–10 night stays (4,406)** are relatively uncommon. Very long stays of **more than 10 nights (389 bookings)** are rare, confirming a strongly right-skewed distribution.
+
+#### Previous Cancellations Analysis
+
+This variable indicates how many times a customer has canceled before. High values might indicate problematic customers:
+
+```{r analysis_previous_cancellations}
+# Check distribution
+ggplot(data = x, aes(x = previous_cancellations)) + 
+  geom_histogram(
+    bins = 50,
+    colour = "black",
+    fill = "orange",
+    alpha = 0.7
+  ) +
+  labs(
+    title = "Distribution of Previous Cancellations",
+    subtitle = "Number of past cancellations per customer",
+    x = "Previous Cancellations",
+    y = "Frequency"
+  ) +
+  theme_light()
+
+# Check extreme values
+plot(sort(x$previous_cancellations))
+grid()
+
+# Examine customers with many cancellations
+table(x$previous_cancellations)
+sum(x$previous_cancellations > 5, na.rm=T)
+```
+
+
+Most customers have 0 previous cancellations. Customers with many cancellations (>5) might need special attention or different booking policies. We understand that the number of children or adults could be outliers that might cause overfitting because the nature of these variables was explanatory. However, these variables may be the output of some models (since we want to observe, among other things, cancellations), therefore we will keep the values high to see what correlation exists between them and the other variables.
+
+Also, although the distribution is highly right-skewed, with the vast majority of customers having no prior cancellations, higher values correspond to valid customer behavior rather than data errors. Therefore, no observations were removed based on their cancellation history. Instead of applying statistical outlier removal criteria, the variable was kept in its original numeric form to preserve information. To support interpretability in a storytelling context, an additional grouped variable was created to distinguish between customers with no prior cancellations, occasional cancellations, and frequent cancellations.
+
+```{r}
+x$previous_cancellations_group <- cut(
+  x$previous_cancellations,
+  breaks = c(-1, 0, 2, 5, Inf),
+  labels = c(
+    "0 cancellations",
+    "1–2 cancellations",
+    "3–5 cancellations",
+    "6+ cancellations"
+  )
+)
+
+table(x$previous_cancellations_group, useNA = "ifany")
+```
+
+
+The distribution shows that most customers have no previous cancellations (**111,003 bookings**). Occasional cancellations are relatively uncommon, with **6,101 bookings involving one or two previous cancellation**, and fewer than **200 bookings** corresponding to customers with more than five past cancellations. This highlights a small but distinct group of repeat cancellers, which may be relevant for risk profiling and booking policy design. Rather than treating frequent cancellers as statistical outliers, they were retained as a meaningful customer segment representing elevated cancellation risk.
+
+
+```{r}
+ggplot(x, aes(x = previous_cancellations_group)) +
+  geom_bar(
+    colour = "black",
+    fill = "orange",
+    alpha = 0.7
+  ) +
+  labs(
+    title = "Customer Segments Based on Previous Cancellations",
+    subtitle = "Grouped distribution for interpretability",
+    x = "Previous Cancellations (grouped)",
+    y = "Number of Bookings"
+  ) +
+  theme_light()
+```
+
+
+#### Previous Bookings Not canceled
+
+This complements the previous variable, showing customer loyalty:
+
+```{r analysis_previous_bookings}
+# Check extreme values
+plot(sort(x$previous_bookings_not_canceled))
+grid()
+
+# Examine very loyal customers
+quantile(x$previous_bookings_not_canceled, c(0.97, 0.98, 0.99), na.rm=T)
+```
+
+
+Most customers are first-time visitors. High values indicate very loyal repeat customers who should be valued. Doesn't seem to be non sense values or extreme values, the problem is that more than 97% of values are 0, i.e. are first time visitors. Let see the distribution without the 0.
+
+```{r}
+ggplot(
+  data = x[x$previous_bookings_not_canceled > 0, ],
+  aes(x = previous_bookings_not_canceled)
+) + 
+  geom_histogram(
+    binwidth = 1,
+    colour = "black",
+    fill = "orange",
+    alpha = 0.7
+  ) +
+  labs(
+    title = "Distribution of Previous Non-Cancelled Bookings (Excluding Zeros)",
+    subtitle = "Only customers with at least one completed booking",
+    x = "Previous Non-Cancelled Bookings",
+    y = "Frequency"
+  ) +
+  theme_light()
+
+```
+
+
+Since high values correspond to valid and meaningful loyal-customer behavior rather than data anomalies, no observations were removed. Instead of grouping the variable into arbitrary categories, a new binary variable was created to distinguish between first-time visitors and returning customers. This transformation improves interpretability and supports data storytelling, while preserving the original numeric variable for analytical purposes.
+
+```{r}
+x$first_time_visitor <- ifelse(
+  x$previous_bookings_not_canceled == 0,
+  1,
+  0
+)
+
+x$first_time_visitor <- factor(
+  x$first_time_visitor,
+  levels = c(1, 0),
+  labels = c("First-time visitor", "Returning customer")
+)
+
+table(x$first_time_visitor)
+```
+
+
+The distribution confirms that the vast majority of customers are first-time visitors. Among returning customers, the number of previous completed bookings decreases rapidly, with only a small group of highly loyal customers exhibiting repeated stays. This highlights a clear distinction between new and returning guests, which is more informative than traditional outlier-based approaches.
+
+#### Booking Changes Analysis
+
+This variable shows how many times a customer modified their booking:
+
+```{r analysis_booking_changes}
+# Check distribution
+ggplot(data=x, aes(x=booking_changes)) + 
+  geom_histogram(bins=20, colour="black", fill="orange", alpha=0.7) +
+  labs(title="Distribution of Booking Changes",
+       subtitle="Number of modifications per booking",
+       x="Booking Changes",
+       y="Frequency") +
+  theme_light()
+
+# Most bookings have no changes
+table(x$booking_changes)
+sum(x$booking_changes > 5, na.rm=T)
+```
+
+
+Most bookings have no changes. Multiple changes might indicate indecisive customers or complex requirements.The distribution is highly right-skewed, with the vast majority of bookings having no changes and only a very small number of reservations exhibiting multiple modifications.
+
+Since high values correspond to valid booking behavior rather than data errors, no observations were removed based on statistical outlier criteria. Instead of applying arbitrary cut-offs, the original numeric variable was preserved, and an additional derived variable was created to indicate whether a booking was modified at least once. This transformation improves interpretability and supports a clearer narrative in the exploratory analysis.
+
+```{r}
+x$booking_changed <- ifelse(
+  x$booking_changes > 0,
+  1,
+  0
+)
+
+x$booking_changed <- factor(
+  x$booking_changed,
+  levels = c(0, 1),
+  labels = c("No changes", "At least one change")
+)
+
+table(x$booking_changed)
+```
+
+
+The results show that most reservations remain unchanged, with nearly 100,000 bookings having zero modifications. Only a small fraction of customers modified their bookings multiple times. This suggests that booking behavior is generally stable, while a small group of customers exhibits higher interaction with their reservations.
+
+
+#### Days in Waiting List
+
+This variable indicates how long a booking was on a waiting list:
+
+```{r analysis_waiting_list}
+# Most bookings are not on waiting list
+sum(x$days_in_waiting_list == 0, na.rm=T)
+sum(x$days_in_waiting_list > 0, na.rm=T)
+
+# Check extreme values
+if(sum(x$days_in_waiting_list > 0, na.rm=T) > 0) {
+  plot(sort(x$days_in_waiting_list[x$days_in_waiting_list > 0]))
+  grid()
+}
+```
+
+
+Most bookings (likely 97%) are not on a waiting list. Long waiting list periods might indicate high-demand periods or capacity constraints. Again, the distribution is highly zero-inflated, with most reservations not experiencing any waiting period. Positive values exhibit a long right tail, reflecting periods of high demand or capacity constraints.
+
+Since long waiting times correspond to meaningful booking behavior rather than data errors, no observations were removed. To improve interpretability in the exploratory analysis, a binary variable was created to distinguish between bookings that were placed on a waiting list and those that were not, while preserving the original numeric variable for more detailed analyses.
+
+```{r}
+x$on_waiting_list <- ifelse(
+  x$days_in_waiting_list > 0,
+  1,
+  0
+)
+x$on_waiting_list <- factor(
+  x$on_waiting_list,
+  levels = c(0, 1),
+  labels = c("No", "Yes")
+)
+
+table(x$on_waiting_list)
+```
+
+
+As we saw, the results show that only a small proportion of bookings (approximately 3%) experienced a waiting period. Among these cases, waiting times vary substantially, with a small number of reservations remaining on the waiting list for extended periods. This suggests that waiting lists are relatively uncommon but may signal high-demand situations when they do occur.
+
+#### Required Car Parking Spaces
+
+```{r analysis_car_parking}
+# Check distribution
+ggplot(data=x, aes(x=required_car_parking_spaces)) + 
+  geom_histogram(bins=10, colour="black", fill="darkblue", alpha=0.7) +
+  labs(title="Distribution of Required Car Parking Spaces",
+       x="Parking Spaces Required",
+       y="Frequency") +
+  theme_light()
+
+# Most bookings don't require parking
+table(x$required_car_parking_spaces)
+sum(x$required_car_parking_spaces > 2, na.rm=T)
+```
+
+
+Most bookings require 0 parking spaces. Multiple spaces might indicate group bookings or special requirements. The variable shows a highly concentrated distribution, with the vast majority of bookings requiring zero or one parking space. A very small number of reservations request more than two parking spaces, accounting for only five observations in the entire dataset. These cases likely correspond to non-standard bookings, such as group arrangements or special logistical requirements, and are not representative of typical hotel usage, similar to the cases with >10 adults or >3 babies. For consistency with other data cleaning decisions and to focus the analysis on standard booking behavior, reservations requiring more than three parking spaces were excluded.
+
+```{r}
+x=x[x$required_car_parking_spaces<=3,]
+```
+
+
+## Categorical variables
+
+For categorical variables, the summary() function gives us a first idea of the
+possible values each can take. For example, in the original set (before removing
+outliers), there are 79,330 reservations at a city hotel (Lisbon) and 40,060 at
+a resort (Algarve). We can ask ourselves whether the cost distribution is the
+same for both groups, either by using the appropriate statistical test or simply
+by comparing histograms, in this case using the ggplot2 package, which is much
+more powerful for creating all kinds of graphs:
+
+```{r hist_adr_tipo}
+# require(ggplot2)
+ggplot(data=x, aes(x=adr, fill=hotel)) + 
+  geom_histogram(bins=50, colour="black") +
+  theme_light()
+```
+
+
+It can be seen that the most common prices in Lisbon (city hotels) are slightly
+to the right of the most common prices in the Algarve (resort hotels), although
+the highest prices in Lisbon decrease more rapidly than in the Algarve. By using
+a violin plot, we can see more detail, especially if we also show the typical
+quartiles of a box plot:
+
+```{r violin_adr_tipo}
+ggplot(data=x, aes(x=hotel, y=adr, fill=hotel)) + 
+  geom_violin() + geom_boxplot(width=.1, outliers = F) +
+  coord_flip() +
+  theme_light()
+```
+
+
+There is an R package called ggstatsplot that has specific functions for each
+type of graph, including appropriate statistical tests to determine if there
+are differences between groups:
+
+```{r ggstatsplot}
+# require(ggstatsplot)
+ggbetweenstats(data=x, x=hotel, y=adr)
+```
+
+
+Another interesting variable is the hotel guests' origin ('country'). The
+problem is that this variable has many different values (178), so we should
+focus on the countries with the most tourists, also showing whether they choose
+a city hotel or a resort:
+
+```{r country}
+# countries with at least 100 bookings
+xx = x %>% group_by(country) %>% mutate(pais=n()) %>% filter(pais>=100)
+xx$country=factor(xx$country)
+ggplot(data=xx, aes(x=reorder(country, -pais))) + 
+  geom_bar(stat="count", aes(fill=hotel)) +
+  theme_light() + 
+  theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1)) 
+```
+
+
+Obviously, Portugal (PRT) ranks first, followed by neighboring countries such
+as Great Britain, France, and Spain. Visitors from Great Britain and Ireland
+are most likely to choose a resort, while those from France, Germany, and Italy
+primarily visit Lisbon.
+
+EXERCISE: Are there differences between residents of Portugal and the rest?
+
+### Differences between residents of Portugal and the rest
+
+Now let's investigate differences between Portuguese residents and international tourists:
+
+```{r portugal_vs_rest}
+# Create a new variable to distinguish Portuguese vs. international tourists
+x$origin = ifelse(x$country=="PRT", "Portugal", "International")
+
+# Compare ADR between Portuguese and international guests
+ggbetweenstats(data=x, x=origin, y=adr,
+               title="Average Daily Rate: Portugal vs International Tourists")
+```
+
+
+Let's also compare hotel type preferences:
+
+```{r portugal_hotel_preference}
+ggplot(data=x, aes(x=origin, fill=hotel)) + 
+  geom_bar(position="fill") +
+  labs(title="Hotel Type Preference: Portugal vs International Tourists",
+       y="Proportion",
+       x="Tourist Origin",
+       fill="Hotel Type") +
+  theme_light() +
+  scale_y_continuous(labels=scales::percent)
+```
+
+
+And analyze cancellation patterns:
+
+```{r portugal_cancellation}
+x$is_canceled <- factor(as.character(x$is_canceled), levels = c("0", "1"))
+
+ggplot(data = x, aes(x = origin, fill = is_canceled)) +
+  geom_bar(position = "fill") +
+  labs(
+    title = "Cancellation Rate: Portugal vs International Tourists",
+    y = "Proportion",
+    x = "Tourist Origin",
+    fill = "Canceled"
+  ) +
+  theme_light() +
+  scale_y_continuous(labels = scales::percent) +
+  scale_fill_manual(
+    values = c("0" = "steelblue", "1" = "coral"),
+    labels = c("0" = "0", "1" = "1")
+  )
+```
+
+
+The analysis reveals clear and consistent differences between Portuguese residents and international tourists. First, international visitors exhibit a significantly higher average daily rate (ADR) than Portuguese residents. This difference is evident both visually, through the distribution and violin plots, and statistically, as confirmed by the comparison of group means. International tourists tend to book more expensive stays, while Portuguese residents show lower and more concentrated price distributions.
+
+Regarding hotel preferences, Portuguese residents display a stronger preference for resort hotels compared to international tourists, who are more likely to stay in city hotels. This suggests different travel motivations, with domestic tourism being more oriented toward leisure destinations, while international tourism is more closely associated with urban travel.
+
+Finally, cancellation behavior also differs substantially between the two groups. Portuguese residents present a markedly higher cancellation rate than international tourists. This pattern may reflect greater flexibility among domestic travelers, who can more easily modify or cancel their plans due to lower travel costs and shorter distances.
+
+Overall, the results indicate that tourist origin plays a key role in pricing, accommodation choice, and booking behavior. Portuguese residents and international tourists represent distinct customer segments with different economic profiles and behavioral patterns, which should be considered separately in both analysis and decision-making. Although the differences are statistically significant, the effect size suggests a moderate practical impact, indicating meaningful but not extreme behavioral differences between the two groups. 
+
+### Is canceled variable
+
+Another interesting variable is 'is_canceled', which indicates whether a 
+reservation was canceled or not (37.0% of the time). We can observe the 
+relationship between two categorical variables using a mosaic chart:
+
+```{r mosaic_hotel_is_canceled}
+# require(ggmosaic)
+x$is_canceled=as.factor(x$is_canceled)
+ggplot(data=x) + 
+  geom_mosaic(aes(x=product(is_canceled, hotel), fill=hotel)) +
+  theme_light() 
+```
+
+
+It can be seen that the cancellation rate (denoted by 1 on the Y-axis) at a 
+resort is lower than that of a hotel in Lisbon. On the X-axis, the relative
+size of each column also corresponds to the proportion of each hotel type. 
+It is important not to consider the Y-axis labels (0/1) as the actual numerical
+cancellation rate, as this can be misleading.
+
+EXERCISE: which other type of graph could be used to represent this data?
+
+### Other type of graph to represent this data
+
+The following visualizations can be used to represent the relationship between hotel type and cancellation status:
+
+**Option 1: Grouped bar chart**
+
+```{r grouped_bar_cancellation}
+ggplot(data=x, aes(x=hotel, fill=is_canceled)) + 
+  geom_bar(position="dodge") +
+  labs(title="Cancellation by Hotel Type - Grouped Bar Chart",
+       x="Hotel Type",
+       y="Count",
+       fill="Canceled") +
+  theme_light() +
+  scale_fill_manual(values=c("0"="steelblue", "1"="coral"),
+                    labels=c("0"="No", "1"="Yes"))
+```
+
+
+**Option 2: Stacked percentage bar chart**
+
+```{r stacked_percentage_cancellation}
+ggplot(data = x, aes(x = hotel, fill = is_canceled)) + 
+  geom_bar(position = "fill") +
+  labs(
+    title = "Cancellation Rate by Hotel Type",
+    subtitle = "Proportion of cancelled vs non-cancelled bookings",
+    x = "Hotel Type",
+    y = "Proportion",
+    fill = "Canceled"
+  ) +
+  scale_y_continuous(labels = scales::percent) +
+  scale_fill_manual(
+    values = c("0" = "steelblue", "1" = "coral"),
+    labels = c("0" = "No", "1" = "Yes")
+  ) +
+  theme_light()
+```
+
+
+**Option 3: Faceted bar chart**
+
+```{r faceted_cancellation}
+ggplot(data=x, aes(x=is_canceled, fill=is_canceled)) + 
+  geom_bar() +
+  facet_wrap(~hotel) +
+  labs(title="Cancellation Distribution by Hotel Type - Faceted View",
+       x="Canceled",
+       y="Count") +
+  theme_light() +
+  scale_fill_manual(values=c("0"="steelblue", "1"="coral"),
+                    labels=c("0"="No", "1"="Yes")) +
+  scale_x_discrete(labels=c("0"="No", "1"="Yes"))
+```
+
+
+Several alternative visualizations can be used to represent the relationship between hotel type and cancellation status. While grouped and faceted bar charts provide useful descriptive views, they rely on absolute counts and are therefore influenced by differences in sample size between hotel types.
+
+Among the considered options, the stacked percentage bar chart is the most appropriate representation, as it directly compares cancellation proportions while controlling for group size. This visualization clearly highlights the higher cancellation rate observed in city hotels compared to resort hotels, making it particularly suitable for interpretative and storytelling purposes.
+
+### Cancellation by country
+
+In the case of cancellation by country for the countries with more tourists:
+
+```{r mosaic_country_is_canceled}
+# at least 1000 bookings
+xx = x %>% group_by(country) %>% mutate(pais=n()) %>% filter(pais>=1000)
+xx$country=factor(xx$country)
+ggplot(data=xx) + 
+  geom_mosaic(aes(x=product(is_canceled, country), fill=country)) +
+  theme_light() +
+  theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1)) 
+```
+
+
+It can be seen that the cancellation rate is much higher for local tourists 
+(from Portugal, PRT), while it is much lower for the rest of the countries.
+However, this graph is not easy to read; in this case, there is no order of 
+either the countries or the percentage of cancellations.
+
+EXERCISE: Improve the previous graph to make it more understandable and 
+consider whether it is possible to visualize the relationships between three
+or more categorical variables.
+
+### Cancellation rates by country
+
+Let's improve the visualization of cancellation rates by country by creating an ordered bar chart:
+
+```{r improved_country_cancellation}
+# Calculate cancellation rate by country (for countries with at least 1000 bookings)
+xx = x %>% 
+  group_by(country) %>% 
+  mutate(pais=n()) %>% 
+  filter(pais>=1000) %>%
+  group_by(country) %>%
+  summarise(
+    total_bookings = n(),
+    cancellation_rate = mean(as.numeric(as.character(is_canceled)))
+  ) %>%
+  arrange(desc(cancellation_rate))
+
+xx$country = factor(xx$country, levels=xx$country)
+
+ggplot(data=xx, aes(x=country, y=cancellation_rate, fill=cancellation_rate)) + 
+  geom_col() +
+  labs(title="Cancellation Rate by Country (Ordered)",
+       subtitle="Countries with at least 1000 bookings",
+       x="Country",
+       y="Cancellation Rate",
+       fill="Rate") +
+  theme_light() +
+  theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1)) +
+  scale_y_continuous(labels=scales::percent) +
+  scale_fill_gradient(low="steelblue", high="coral", labels=scales::percent)
+```
+
+
+```{r cancellation_by_country_improved}
+library(dplyr)
+
+# Countries with at least 1000 bookings
+xx <- x %>%
+  group_by(country) %>%
+  mutate(pais = n()) %>%
+  ungroup() %>%
+  filter(pais >= 1000) %>%
+  mutate(is_canceled = factor(as.character(is_canceled), levels = c("0", "1")))
+
+# Compute cancellation rate per country (share of "1")
+country_rates <- xx %>%
+  group_by(country) %>%
+  summarise(
+    n = n(),
+    cancel_rate = mean(is_canceled == "1"),
+    .groups = "drop"
+  ) %>%
+  arrange(desc(cancel_rate))
+
+# Reorder countries by cancellation rate
+xx$country <- factor(xx$country, levels = country_rates$country)
+
+ggplot(xx, aes(x = country, fill = is_canceled)) +
+  geom_bar(position = "fill", color = "black") +
+  scale_y_continuous(labels = scales::percent) +
+  scale_fill_manual(
+    values = c("0" = "steelblue", "1" = "coral"),
+    labels = c("0" = "Not canceled", "1" = "Canceled")
+  ) +
+  geom_text(
+    data = country_rates,
+    aes(x = country, y = 1.02, label = scales::percent(cancel_rate, accuracy = 0.1)),
+    inherit.aes = FALSE,
+    size = 3
+  ) +
+  coord_cartesian(ylim = c(0, 1.08)) +
+  labs(
+    title = "Cancellation Rate by Country (≥ 1000 bookings)",
+    subtitle = "Countries ordered by cancellation rate (labels show % canceled)",
+    x = "Country",
+    y = "Proportion of bookings",
+    fill = "Status"
+  ) +
+  theme_light() +
+  theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 1))
+```
+
+
+Now let's visualize the relationship between THREE categorical variables (country, hotel type, and cancellation):
+
+```{r cancellation_country_hotel_3vars}
+xx$hotel <- as.factor(xx$hotel)
+
+ggplot(xx, aes(x = country, fill = is_canceled)) +
+  geom_bar(position = "fill", color = "black") +
+  facet_wrap(~ hotel) +
+  scale_y_continuous(labels = scales::percent) +
+  scale_fill_manual(
+    values = c("0" = "steelblue", "1" = "coral"),
+    labels = c("0" = "Not canceled", "1" = "Canceled")
+  ) +
+  labs(
+    title = "Cancellation Rate by Country and Hotel Type (≥ 1000 bookings)",
+    subtitle = "Proportions within each country, split by hotel type",
+    x = "Country",
+    y = "Proportion",
+    fill = "Status"
+  ) +
+  theme_light() +
+  theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 1))
+```
+
+
+Alternative visualization using grouped bars:
+
+```{r three_variables_grouped}
+# Calculate rates for better visualization
+xx_summary = xx %>%
+  group_by(country, hotel, is_canceled) %>%
+  summarise(count = n(), .groups='drop') %>%
+  group_by(country, hotel) %>%
+  mutate(rate = count/sum(count)) %>%
+  filter(is_canceled == "1")
+
+ggplot(data=xx_summary, aes(x=country, y=rate, fill=hotel)) + 
+  geom_col(position="dodge") +
+  labs(title="Cancellation Rate by Country and Hotel Type",
+       x="Country",
+       y="Cancellation Rate",
+       fill="Hotel Type") +
+  theme_light() +
+  theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1)) +
+  scale_y_continuous(labels=scales::percent)
+```
+
+
+These visualizations clearly show that cancellation patterns vary both by country and hotel type. Portuguese tourists have consistently higher cancellation rates across both hotel types.
+
+### Reservations behavior relative to the arrival date
+
+Finally, let's analyze the behavior of reservations relative to the arrival
+date. First, using the R lubridate package (a marvel for manipulating date and
+time data), we'll create a 'day' variable to determine the day of the week the
+hotel was checked in and analyze how many reservations there were each day:
+
+```{r dia}
+x$dia=as_date(paste0(x$arrival_date_year,'-',x$arrival_date_month,'-',x$arrival_date_day_of_month))
+ggplot(data=x,aes(x=dia,group=arrival_date_year,color=as.factor(arrival_date_year))) + 
+  geom_bar() + scale_color_manual(values=c("2015"="red","2016"="green","2017"="blue")) + 
+  theme_light() + 
+  theme(legend.position='none') 
+```
+
+
+EXERCISE: Improve and split the above graph by hotel type or country of origin.
+
+### Graph by country and hotel type
+
+Let's improve the temporal analysis by creating better visualizations split by hotel type:
+
+```{r improved_temporal_hotel}
+# First, let's add a proper legend and improve the original graph
+ggplot(data=x, aes(x=dia, group=arrival_date_year, color=as.factor(arrival_date_year))) + 
+  geom_bar() + 
+  scale_color_manual(values=c("2015"="red","2016"="green","2017"="blue"),
+                     name="Year") + 
+  labs(title="Daily Bookings Over Time",
+       x="Date",
+       y="Number of Bookings") +
+  theme_light() + 
+  theme(legend.position='right')
+```
+
+
+Now let's split by hotel type:
+
+```{r temporal_by_hotel_type}
+ggplot(data=x, aes(x=dia, fill=hotel)) + 
+  geom_bar() + 
+  facet_wrap(~hotel, ncol=1, scales="free_y") +
+  labs(title="Daily Bookings by Hotel Type",
+       x="Date",
+       y="Number of Bookings",
+       fill="Hotel Type") +
+  theme_light()
+```
+
+
+We can also split by weekly trends
+
+```{r}
+weekly_hotel <- x %>%
+  mutate(week = floor_date(dia, unit = "week")) %>%
+  count(week, hotel)
+
+ggplot(weekly_hotel, aes(x = week, y = n)) +
+  geom_line(linewidth = 0.7) +
+  facet_wrap(~ hotel, ncol = 1, scales = "free_y") +
+  labs(
+    title = "Weekly Booking Volume Over Time by Hotel Type",
+    subtitle = "Aggregated by week to reduce daily noise",
+    x = "Week",
+    y = "Number of bookings"
+  ) +
+  theme_light()
+```
+
+
+And now the weekly trend, separated by `origin`:
+
+```{r bookings_by_week_and_origin}
+weekly_origin <- x %>%
+  mutate(week = floor_date(dia, unit = "week")) %>%
+  count(week, origin)
+
+ggplot(weekly_origin, aes(x = week, y = n, color = origin)) +
+  geom_line(linewidth = 0.7) +
+  labs(
+    title = "Weekly Booking Volume Over Time by Tourist Origin",
+    subtitle = "Portugal vs International (weekly aggregation)",
+    x = "Week",
+    y = "Number of bookings",
+    color = "Origin"
+  ) +
+  theme_light()
+```
+
+
+Or, by origin and type of hotel
+
+```{r bookings_by_week_hotel_origin}
+weekly_hotel_origin <- x %>%
+  mutate(
+    week = floor_date(dia, unit = "week"),
+    origin = ifelse(country == "PRT", "Portugal", "International")
+  ) %>%
+  count(week, hotel, origin)
+
+ggplot(weekly_hotel_origin, aes(x = week, y = n, color = origin)) +
+  geom_line(linewidth = 0.7) +
+  facet_wrap(~ hotel, ncol = 1, scales = "free_y") +
+  labs(
+    title = "Weekly Booking Volume by Hotel Type and Tourist Origin",
+    subtitle = "Small multiples by hotel; color indicates origin",
+    x = "Week",
+    y = "Number of bookings",
+    color = "Origin"
+  ) +
+  theme_light()
+```
+
+
+The weekly booking trends reveal distinct patterns by hotel type and tourist origin. In city hotels, international tourists consistently account for a higher booking volume than Portuguese residents, with a clear upward trend over time and pronounced seasonal peaks. This suggests that city hotels are primarily driven by international demand, likely related to urban tourism and business travel.
+
+In contrast, resort hotels show a more balanced pattern between Portuguese and international guests. While international bookings still dominate overall, domestic tourism plays a more relevant role, particularly during peak seasons, where booking volumes from Portuguese residents increase noticeably. This indicates that resorts are more closely linked to leisure-oriented and seasonal travel, especially among domestic tourists.
+
+Overall, the results highlight that booking behavior over time is strongly influenced by both hotel type and tourist origin, reinforcing the importance of segmenting demand when analyzing temporal booking patterns.
+
+
+Let's also create a visualization showing monthly patterns by hotel type:
+
+```{r monthly_patterns_hotel}
+x$month_year = format(x$dia, "%Y-%m")
+
+ggplot(data=x, aes(x=month_year, fill=hotel)) + 
+  geom_bar() + 
+  labs(title="Monthly Bookings by Hotel Type",
+       x="Month-Year",
+       y="Number of Bookings",
+       fill="Hotel Type") +
+  theme_light() +
+  theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1))
+```
+
+
+Now let's analyze by country of origin (top countries):
+
+```{r temporal_by_country}
+# Filter for top 5 countries
+top_countries <- x %>% 
+  group_by(country) %>% 
+  summarise(total = n(), .groups = "drop") %>% 
+  arrange(desc(total)) %>% 
+  head(5) %>% 
+  pull(country)
+
+x_top <- x %>% 
+  filter(country %in% top_countries)
+
+ggplot(data = x_top, aes(x = dia, color = country)) + 
+  geom_freqpoly(bins = 100, linewidth = 1) + 
+  labs(
+    title = "Booking Trends by Country of Origin (Top 5)",
+    x = "Date",
+    y = "Number of Bookings",
+    color = "Country"
+  ) +
+  theme_light()
+```
+
+
+Seasonal patterns by country:
+
+```{r seasonal_by_country}
+x_top$month = factor(month(x_top$dia), levels=1:12, 
+                     labels=c("Jan","Feb","Mar","Apr","May","Jun",
+                             "Jul","Aug","Sep","Oct","Nov","Dec"))
+
+ggplot(data=x_top, aes(x=month, fill=country)) + 
+  geom_bar(position="dodge") + 
+  labs(title="Seasonal Booking Patterns by Country (Top 5)",
+       x="Month",
+       y="Number of Bookings",
+       fill="Country") +
+  theme_light()
+```
+
+
+This alternative approach provides a clearer high-level view of booking dynamics by aggregating reservations at a monthly level and by country of origin. The monthly stacked bar chart shows a pronounced seasonal pattern in both hotel types, with booking volumes peaking during spring and summer months. City hotels consistently account for a larger share of total bookings, indicating a stronger and more stable demand throughout the year, while resort hotels exhibit greater seasonality, with relatively higher activity during peak leisure periods.
+
+When examining booking trends by country of origin, Portugal clearly dominates the overall volume, reflecting the importance of domestic tourism. However, international demand follows similar seasonal patterns, with noticeable increases during summer months. Among the top international markets, France and the United Kingdom display more stable booking activity across the year, while Spain and Germany show sharper seasonal fluctuations.
+
+The seasonal aggregation by month further highlights these differences. Domestic bookings peak during late spring and summer, suggesting holiday-driven travel behavior, whereas international bookings remain more evenly distributed, particularly for countries with stronger urban tourism demand. Overall, this approach complements the weekly analysis by smoothing short-term variability and emphasizing long-term seasonal patterns across hotel types and tourist origins.
+
+### Days coverage
+
+As described in the article, the data covers the period from July 1, 2015, to
+August 31, 2017. Some peaks can be observed that might be interesting to explain
+(what happened those days, i.e. 2015-12-05?). You can check Google Trends to
+get some insights:
+
+https://trends.google.es/trends/explore?date=2015-01-01%202017-12-31&q=lisboa,algarve&hl=es
+
+```{r max_dia}
+max(table(x$dia))
+which.max(table(x$dia))
+```
+
+
+The function `max(table(dia))` identifies the highest number of bookings recorded on a single day, while `which.max(table(dia))` indicates the specific date on which this peak occurred. In this case, December 5th, 2015 corresponds to the day with the highest booking volume, rather than the final or most recent date in the dataset. This reflects a short-term surge in demand within the overall observation period.
+
+# Type of travel
+
+With the computed day 'dia', along with the variables 'stays_in_week' and 
+'weekend_nights', we can try to manually categorize the trip type according
+to the following criteria (this is arbitrary, clearly improvable):
+
+1) if 'stays_in_weekend_nights' is zero => work trip
+2) if 'stays_in_week_nights' is zero or one and in this case the entry is on
+   Friday => weekend
+3) if 'stays_in_week_nights' is five and 'stays_in_weekend_nights' is three 
+  (that is, from Saturday or Sunday to Saturday or Sunday) 
+   => week holiday package
+4) if 'stays_in_weekend_nights' is one or two and 'stays_in_week_days' is five
+   or less => work + rest
+5) the rest of combinations => holidays
+
+```{r tipo_visita}
+x$tipo=ifelse(x$stays_in_weekend_nights==0, "work",
+       ifelse(x$stays_in_week_nights==0, "weekend",
+       ifelse(x$stays_in_week_nights==1 & wday(x$dia)==6, "weekend",
+       ifelse(x$stays_in_week_nights==5 & 
+              (x$stays_in_weekend_nights==3 |
+               x$stays_in_weekend_nights==4), "package",
+       ifelse(x$stays_in_week_nights<=5 & 
+              x$stays_in_weekend_nights<3, "work+rest",
+       "rest")))))
+```
+
+
+One way to refine this classification would be to look at the number of adults,
+children, and infants to decide whether it is a business traveler or a family.
+The possibilities are endless: you can enrich the dataset with geographic data
+(distance between countries), demographic data, economic data (per capita
+income), weather data (in both Portugal and the country of origin), etc. 
+
+EXERCISE: You must explore such enriched dataset and, in this process of 
+exploration, decide what story you want to tell about it. Some ideas:
+
+1) do tourists from different countries travel in different dates?
+2) differences in cancellations among groups (countries, type of stay, ...)
+3) relationship between type of stay 'tipo' and cost 'adr'
+4) differences among groups with respect to hotel type (city / resort)
+
+NOTE: This is a good example of using ChatGPT or other generative AI to ask 
+interesting questions about the proposed dataset. The following paper describes
+the potential uses of generative AI in the different phases of creating a data
+visualization for storytelling:
+
+https://ieeexplore.ieee.org/stamp/stamp.jsp?arnumber=10891192
+
+### Data Storytelling Exploration
+
+Let's explore the dataset to tell a comprehensive story about hotel booking patterns:
+
+#### Story 1: Do tourists from different countries travel on different dates?
+
+To study seasonality consistently across all subsequent analyses, we created a global `season` variable for the entire dataset. This avoids re-computing season labels in each chunk and ensures that all plots and comparisons are based on the same seasonal definition.
+
+```{r add_season_global}
+x <- x %>%
+  mutate(
+    season = case_when(
+      month(dia) %in% c(12, 1, 2) ~ "Winter",
+      month(dia) %in% c(3, 4, 5) ~ "Spring",
+      month(dia) %in% c(6, 7, 8) ~ "Summer",
+      month(dia) %in% c(9, 10, 11) ~ "Fall"
+    ),
+    season = factor(season, levels = c("Spring", "Summer", "Fall", "Winter"))
+  )
+```
+
+
+Because the dataset contains many countries, plotting all of them at once reduces readability. Therefore, we focus on the top 5 countries by number of bookings to highlight the most influential markets and compare their seasonal travel preferences in a clear and interpretable way.
+
+```{r story1_seasonal_patterns}
+# Focus on top countries and analyze seasonal patterns
+top_5_countries <- x %>%
+  count(country, sort = TRUE) %>%
+  slice_head(n = 5) %>%
+  pull(country)
+
+x_top5 <- x %>%
+  filter(country %in% top_5_countries)
+
+ggplot(x_top5, aes(x = season, fill = country)) +
+  geom_bar(position = "fill") +
+  labs(
+    title = "Seasonal Travel Patterns by Country (Top 5)",
+    subtitle = "Proportion of bookings across seasons",
+    x = "Season",
+    y = "Proportion of bookings",
+    fill = "Country"
+  ) +
+  scale_y_continuous(labels = scales::percent) +
+  theme_light()
+```
+
+
+To complement the country-level view, we compare Portuguese residents versus international tourists. This aggregation reduces complexity while directly addressing a meaningful segmentation (domestic vs foreign demand), making seasonal differences easier to interpret and discuss in a storytelling context.
+
+```{r story1_seasonal_patterns_origin}
+ggplot(x, aes(x = season, fill = origin)) +
+geom_bar(position = "fill") +
+labs(
+title = "Seasonal Travel Patterns: Portugal vs International",
+subtitle = "Proportion of bookings across seasons",
+x = "Season",
+y = "Proportion of bookings",
+fill = "Origin"
+) +
+scale_y_continuous(labels = scales::percent) +
+theme_light()
+```
+
+
+Seasonal grouping can hide important within-season differences. Therefore, we also analyze monthly travel patterns, which provides higher resolution and helps detect peaks associated with holidays or destination-specific travel habits.
+
+```{r story1_top5_month}
+x_top5_month <- x %>%
+  filter(country %in% top_5_countries) %>%
+  mutate(month = factor(month(dia, label = TRUE, abbr = TRUE),
+                        levels = month.abb))
+
+ggplot(x_top5_month, aes(x = month, fill = country)) +
+  geom_bar(position = "fill") +
+  labs(
+    title = "Monthly Travel Patterns by Country (Top 5)",
+    subtitle = "Proportion of bookings by month",
+    x = "Month",
+    y = "Proportion of bookings",
+    fill = "Country"
+  ) +
+  scale_y_continuous(labels = scales::percent) +
+  theme_light()
+```
+
+
+In addition to cross-country comparisons, monthly patterns are examined for domestic versus international demand. This allows a direct comparison of seasonality at a finer scale and helps identify months where the booking mix shifts between Portuguese residents and international tourists.
+
+```{r story1_origin_month}
+x_origin_month <- x %>%
+  mutate(month = factor(month(dia, label = TRUE, abbr = TRUE),
+                        levels = month.abb))
+
+ggplot(x_origin_month, aes(x = month, fill = origin)) +
+  geom_bar(position = "fill") +
+  labs(
+    title = "Monthly Travel Patterns: Portugal vs International",
+    subtitle = "Proportion of bookings by month",
+    x = "Month",
+    y = "Proportion of bookings",
+    fill = "Origin"
+  ) +
+  scale_y_continuous(labels = scales::percent) +
+  theme_light()
+```
+
+
+Last, weekly aggregation captures short-term seasonality more precisely than months and is useful to detect holiday-related peaks. We use week-of-year to compare how travel timing differs across the main origin countries.
+
+```{r story1_top5_week_of_year}
+x_top5_week <- x %>%
+  filter(country %in% top_5_countries) %>%
+  mutate(week_of_year = isoweek(dia))
+
+ggplot(x_top5_week, aes(x = week_of_year, fill = country)) +
+  geom_bar(position = "fill") +
+  labs(
+    title = "Weekly Travel Patterns by Country (Top 5)",
+    subtitle = "Proportion of bookings by ISO week of year",
+    x = "ISO week of year",
+    y = "Proportion of bookings",
+    fill = "Country"
+  ) +
+  scale_y_continuous(labels = scales::percent) +
+  theme_light()
+```
+
+
+Using week-of-year for Portugal versus international demand helps identify whether domestic and foreign tourists concentrate their bookings in different parts of the year, beyond broad seasonal categories.
+
+```{r story1_origin_week_of_year}
+x_origin_week <- x %>%
+  mutate(week_of_year = isoweek(dia))
+
+ggplot(x_origin_week, aes(x = week_of_year, fill = origin)) +
+  geom_bar(position = "fill") +
+  labs(
+    title = "Weekly Travel Patterns: Portugal vs International",
+    subtitle = "Proportion of bookings by ISO week of year",
+    x = "ISO week of year",
+    y = "Proportion of bookings",
+    fill = "Origin"
+  ) +
+  scale_y_continuous(labels = scales::percent) +
+  theme_light()
+```
+
+
+##### Analysis
+
+The analysis clearly shows that tourists from different countries do not travel to Portugal at the same times of the year, and that both the level and the timing of seasonality differ by origin.
+
+At a seasonal level, Portuguese residents account for a larger proportion of bookings during Fall and Winter, whereas international tourists dominate more strongly during Spring and Summer. This suggests that domestic tourism is relatively less seasonal and more evenly distributed across the year, while international demand is more concentrated around traditional vacation periods.
+
+When the analysis is refined at the monthly level, these differences become more pronounced. Portuguese bookings increase notably in late summer and early autumn (September–October), while international bookings peak more clearly during mid-summer months. This pattern is consistent with domestic travelers taking advantage of shorter or more flexible holiday periods, compared to international tourists who tend to travel during fixed vacation seasons.
+
+Weekly patterns further reinforce these findings. Domestic bookings show higher relative shares toward the end of the year and during certain late-summer weeks, while international bookings dominate most weeks but with noticeable fluctuations around peak holiday periods. The weekly analysis highlights that differences are not limited to broad seasons but also occur at finer temporal resolutions.
+
+Overall, these results confirm that travel timing varies substantially by country of origin. Aggregating tourists into meaningful groups (such as Portugal versus international) allows these temporal differences to be identified clearly and provides a strong basis for further analyses involving pricing, cancellation behavior, or type of stay.
+
+### Split travel-timing patterns by hotel type
+
+Travel seasonality depends not only on tourist origin but also on the type of destination. In this dataset, “City Hotel”and “Resort Hotel” represent two distinct tourism products with different demand drivers (urban vs leisure). If we analyze travel timing by country or by origin without splitting by hotel type, we risk mixing two patterns and drawing misleading conclusions.
+
+To make comparisons clearer, we combine three temporal resolutions (season, month, and ISO week of year) with two origin granularities (Top 5 countries and Portugal vs International), and we facet every chart by hotel type. This “small-multiples” approach reduces visual ambiguity and allows us to detect whether differences in travel timing are consistent across hotel types or driven mainly by one of them.
+
+```{r story1_all_12_panels, fig.width=16, fig.height=12}
+# Common theme tweaks (optional, makes all comparable)
+base_theme <- theme_light() +
+  theme(
+    legend.position = "bottom",
+    axis.text.x = element_text(angle = 0, hjust = 0.5)
+  )
+
+# 1) Season: Top 5
+p1 <- x %>%
+  filter(country %in% top_5_countries) %>%
+  ggplot(aes(x = season, fill = country)) +
+  geom_bar(position = "fill") +
+  scale_y_continuous(labels = scales::percent) +
+  labs(
+    title = "Season (Top 5 countries)",
+    x = "Season", y = "Proportion", fill = "Country"
+  ) +
+  facet_wrap(~ hotel, ncol = 1) +
+  base_theme
+
+# 2) Season: Origin
+p2 <- x %>%
+  ggplot(aes(x = season, fill = origin)) +
+  geom_bar(position = "fill") +
+  scale_y_continuous(labels = scales::percent) +
+  labs(
+    title = "Season (Portugal vs International)",
+    x = "Season", y = "Proportion", fill = "Origin"
+  ) +
+  facet_wrap(~ hotel, ncol = 1) +
+  base_theme
+
+# Prepare month factor once (to keep correct ordering)
+x_month <- x %>%
+  mutate(month = factor(month(dia, label = TRUE, abbr = TRUE), levels = month.abb))
+
+# 3) Month: Top 5
+p3 <- x_month %>%
+  filter(country %in% top_5_countries) %>%
+  ggplot(aes(x = month, fill = country)) +
+  geom_bar(position = "fill") +
+  scale_y_continuous(labels = scales::percent) +
+  labs(
+    title = "Month (Top 5 countries)",
+    x = "Month", y = "Proportion", fill = "Country"
+  ) +
+  facet_wrap(~ hotel, ncol = 1) +
+  base_theme
+
+# 4) Month: Origin
+p4 <- x_month %>%
+  ggplot(aes(x = month, fill = origin)) +
+  geom_bar(position = "fill") +
+  scale_y_continuous(labels = scales::percent) +
+  labs(
+    title = "Month (Portugal vs International)",
+    x = "Month", y = "Proportion", fill = "Origin"
+  ) +
+  facet_wrap(~ hotel, ncol = 1) +
+  base_theme
+
+# Week-of-year
+x_week <- x %>%
+  mutate(week_of_year = isoweek(dia))
+
+# 5) ISO Week: Top 5
+p5 <- x_week %>%
+  filter(country %in% top_5_countries) %>%
+  ggplot(aes(x = week_of_year, fill = country)) +
+  geom_bar(position = "fill") +
+  scale_y_continuous(labels = scales::percent) +
+  labs(
+    title = "ISO Week (Top 5 countries)",
+    x = "ISO week of year", y = "Proportion", fill = "Country"
+  ) +
+  facet_wrap(~ hotel, ncol = 1) +
+  base_theme +
+  theme(axis.text.x = element_text(angle = 0))
+
+# 6) ISO Week: Origin
+p6 <- x_week %>%
+  ggplot(aes(x = week_of_year, fill = origin)) +
+  geom_bar(position = "fill") +
+  scale_y_continuous(labels = scales::percent) +
+  labs(
+    title = "ISO Week (Portugal vs International)",
+    x = "ISO week of year", y = "Proportion", fill = "Origin"
+  ) +
+  facet_wrap(~ hotel, ncol = 1) +
+  base_theme
+
+# Combine into a single figure (6 plots * 2 hotel facets = 12 panels)
+(p1 | p2) /
+(p3 | p4) /
+(p5 | p6) +
+  plot_layout(guides = "collect") +
+  plot_annotation(
+    title = "Travel Timing by Origin, Split by Hotel Type",
+    subtitle = "Each chart is faceted by hotel type (City vs Resort) for direct comparison"
+  )
+```
+
+
+### Conclusion: Do tourists from different countries travel on different dates?
+
+Yes—travel timing varies by tourist origin, and the differences are strongly shaped by hotel type.
+
+For the **City Hotel**, international demand dominates across most of the year, but the relative share of Portuguese residents increases noticeably in the Fall (and early Fall weeks). This suggests that domestic travel is more prominent in shoulder seasons for city stays, while international travel remains the main driver during peak tourism months.
+
+For the **Resort Hotel**, the mix is more balanced and clearly more seasonal. Portuguese residents represent a larger share in Winter and late-year weeks, while international tourists dominate more clearly through Spring and Summer. This pattern is consistent with leisure-oriented resort demand and highlights that domestic tourism plays a relatively stronger role outside the core vacation season.
+
+At the monthly and weekly levels, these contrasts become sharper: domestic share rises in specific periods (notably around September–October for city stays and toward year-end for resort stays), while international share is more stable and dominant during peak travel periods. Overall, the evidence confirms that both origin and hotel type jointly determine when bookings occur, reinforcing the value of segmenting demand rather than treating tourist behavior as homogeneous.
+
+
+#### Story 2: Cancellation patterns across groups
+
+```{r story2_cancellations}
+# Analyze cancellations by trip type and country origin
+x_story2 = x %>%
+  filter(country %in% top_5_countries) %>%
+  group_by(tipo, country, is_canceled) %>%
+  summarise(count = n(), .groups='drop') %>%
+  group_by(tipo, country) %>%
+  mutate(rate = count/sum(count)) %>%
+  filter(is_canceled == "1")
+
+ggplot(data=x_story2, aes(x=tipo, y=rate, fill=country)) + 
+  geom_col(position="dodge") +
+  labs(title="Cancellation Rates by Trip Type and Country",
+       subtitle="Who cancels and when?",
+       x="Trip Type",
+       y="Cancellation Rate",
+       fill="Country") +
+  theme_light() +
+  theme(axis.text.x = element_text(angle = 45, vjust = 1, hjust=1)) +
+  scale_y_continuous(labels=scales::percent)
+```
+
+
+A grouped bar chart becomes difficult to interpret when comparing many categories simultaneously. A heatmap could improve readability by encoding cancellation rate with color intensity, making it easier to identify which trip types and countries exhibit systematically higher cancellation behavior.
+
+```{r story2_heatmap_tipo_country, fig.width=16, fig.height=6}
+df_top5 <- x %>%
+  filter(country %in% top_5_countries) %>%
+  group_by(country, tipo) %>%
+  summarise(
+    cancel_rate = mean(is_canceled == "1"),
+    .groups = "drop"
+  )
+
+df_origin <- x %>%
+  group_by(origin, tipo) %>%
+  summarise(
+    cancel_rate = mean(is_canceled == "1"),
+    .groups = "drop"
+  )
+
+lim_max <- max(df_top5$cancel_rate, df_origin$cancel_rate, na.rm = TRUE)
+
+# Plot 1: Top 5
+p1 <- ggplot(df_top5, aes(x = tipo, y = country, fill = cancel_rate)) +
+  geom_tile(color = "white") +
+  scale_fill_gradient(
+    low = "#deebf7",
+    high = "#08519c",
+    limits = c(0, lim_max),
+    oob = scales::squish,
+    labels = scales::percent,
+    na.value = "grey85"
+  ) +
+  labs(
+    title = "Cancellation Rate by Trip Type and Country (Top 5)",
+    x = "Trip type (tipo)",
+    y = "Country",
+    fill = "Cancellation rate"
+  ) +
+  theme_light() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+
+# Plot 2: Origin
+p2 <- ggplot(df_origin, aes(x = tipo, y = origin, fill = cancel_rate)) +
+  geom_tile(color = "white") +
+  scale_fill_gradient(
+    low = "#deebf7",
+    high = "#08519c",
+    limits = c(0, lim_max),
+    oob = scales::squish,
+    labels = scales::percent,
+    na.value = "grey85"
+  ) +
+  labs(
+    title = "Cancellation Rate by Trip Type and Origin",
+    x = "Trip type (tipo)",
+    y = "Origin",
+    fill = "Cancellation rate"
+  ) +
+  theme_light() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+
+(p1 | p2) +
+  plot_layout(guides = "collect") +
+  plot_annotation(
+    title = "Cancellation Patterns by Trip Type",
+    subtitle = "Top 5 countries vs aggregated origin (Portugal vs International)"
+  )
+```
+
+```{r story2_heatmap_fig2, fig.width=14, fig.height=10}
+# Dataframes per hotel
+df_top5_hotel <- x %>%
+  filter(country %in% top_5_countries) %>%
+  group_by(hotel, country, tipo) %>%
+  summarise(
+    cancel_rate = mean(is_canceled == "1"),
+    .groups = "drop"
+  )
+
+df_origin_hotel <- x %>%
+  group_by(hotel, origin, tipo) %>%
+  summarise(
+    cancel_rate = mean(is_canceled == "1"),
+    .groups = "drop"
+  )
+
+lim_max2 <- max(df_top5_hotel$cancel_rate, df_origin_hotel$cancel_rate, na.rm = TRUE)
+
+# Helper to avoid repetition
+make_heat <- function(data, hotel_value, y_name, y_label, title_text) {
+  data_h <- data %>% filter(hotel == hotel_value)
+  ggplot(data_h, aes(x = tipo, y = .data[[y_name]], fill = cancel_rate)) +
+    geom_tile(color = "white") +
+    scale_fill_gradient(
+      low = "#deebf7",
+      high = "#08519c",
+      limits = c(0, lim_max2),
+      oob = scales::squish,
+      labels = scales::percent,
+      na.value = "grey85"
+    ) +
+    labs(
+      title = title_text,
+      subtitle = hotel_value,
+      x = "Trip type (tipo)",
+      y = y_label,
+      fill = "Cancellation rate"
+    ) +
+    theme_light() +
+    theme(axis.text.x = element_text(angle = 45, hjust = 1))
+}
+
+# 4 panels
+p_city_top5   <- make_heat(df_top5_hotel,   "City Hotel",   "country", "Country", "Top 5 Countries")
+p_city_origin <- make_heat(df_origin_hotel, "City Hotel",   "origin",  "Origin",  "Portugal vs International")
+
+p_res_top5    <- make_heat(df_top5_hotel,   "Resort Hotel", "country", "Country", "Top 5 Countries")
+p_res_origin  <- make_heat(df_origin_hotel, "Resort Hotel", "origin",  "Origin",  "Portugal vs International")
+
+(p_city_top5 | p_city_origin) /
+(p_res_top5  | p_res_origin) +
+  plot_layout(guides = "collect") +
+  plot_annotation(
+    title = "Cancellation Patterns by Trip Type, Split by Hotel Type",
+    subtitle = "Heatmaps show cancellation rate (darker = higher)"
+  )
+```
+
+
+#### Conclusions – Differences in Cancellation Patterns Across Groups
+
+The analysis reveals strong and systematic differences in cancellation behavior across trip types, countries of origin, and hotel types. These differences are consistent across multiple visualizations, indicating that cancellations are not random but closely linked to who travels, how they travel, and where they stay.
+
+##### 1. Country of origin is a major driver of cancellations
+
+Across all trip types, Portuguese residents exhibit substantially higher cancellation rates than international tourists. This pattern holds consistently:
+
+For both City Hotels and Resort Hotels
+
+Across all trip types (work, weekend, rest, package, work+rest)
+
+In both aggregated views (Portugal vs International) and detailed country-level views (Top 5 countries)
+
+This suggests that local guests behave more flexibly, possibly booking earlier and canceling more often due to lower travel costs and easier re-planning.
+
+##### 2. Trip type strongly influences cancellation risk
+
+Cancellation rates vary clearly by type of stay (tipo):
+
+“Rest” and “work+rest” trips show the highest cancellation rates, especially among Portuguese guests.
+
+Weekend trips have the lowest cancellation rates, particularly for international tourists.
+
+Package-type stays tend to have lower cancellation rates than flexible leisure stays, especially in resort hotels.
+
+This indicates that commitment level matters: trips with clearer structure or higher upfront planning (packages, weekends) are less likely to be canceled.
+
+##### 3. Hotel type moderates cancellation behavior
+
+When splitting the analysis by hotel type, important differences emerge:
+
+City Hotels consistently show higher cancellation rates than Resort Hotels for the same trip type and country.
+
+The gap between Portugal and International tourists is larger in City Hotels, suggesting that urban stays are booked more opportunistically.
+
+Resort Hotels exhibit more stable cancellation patterns, particularly for international guests, likely due to longer stays and higher sunk costs.
+
+This confirms that context matters: destination type shapes guest commitment and booking reliability.
+
+##### 4. International tourists are more predictable and reliable
+
+Across all heatmaps, international tourists display lower and more homogeneous cancellation rates, regardless of trip type or hotel:
+
+Their cancellation rates are consistently clustered in lighter color ranges.
+
+Differences across trip types are smaller than for Portuguese residents.
+
+This suggests that international demand is more stable, which is valuable information for forecasting and revenue management.
+
+#### Story 3: Relationship between trip type and cost
+
+```{r story3_tipo_adr}
+ggbetweenstats(data=x, x=tipo, y=adr,
+               title="Average Daily Rate by Trip Type",
+               xlab="Trip Type",
+               ylab="Average Daily Rate (€)")
+```
+
+
+Let's analyze this plot spliting by groups
+
+```{r story3_adr_tipo_origin, fig.width=16, fig.height=10}
+plot_panel <- function(df, panel_title) {
+  ggbetweenstats(
+    data = df,
+    x = tipo,
+    y = adr,
+    title = panel_title,
+    xlab = "Trip type (tipo)",
+    ylab = "Average Daily Rate (ADR)",
+    pairwise.comparisons = FALSE
+  )
+}
+
+# Subsets (4 panels)
+p_city_pt  <- plot_panel(filter(x, hotel == "City Hotel",  origin == "Portugal"),
+                         "City Hotel — Portugal")
+
+p_city_int <- plot_panel(filter(x, hotel == "City Hotel",  origin == "International"),
+                         "City Hotel — International")
+
+p_res_pt   <- plot_panel(filter(x, hotel == "Resort Hotel", origin == "Portugal"),
+                         "Resort Hotel — Portugal")
+
+p_res_int  <- plot_panel(filter(x, hotel == "Resort Hotel", origin == "International"),
+                         "Resort Hotel — International")
+
+# Combine 2x2
+(p_city_pt | p_city_int) /
+(p_res_pt  | p_res_int) +
+  plot_layout(guides = "collect") +
+  plot_annotation(
+    title = "ADR by Trip Type, Split by Origin and Hotel Type",
+    subtitle = "Comparison: (City/Resort) × (Portugal/International)"
+  )
+```
+
+
+#### Conclusion: Relationship between trip type and cost
+
+The analysis reveals a clear and consistent relationship between trip type and average daily rate (ADR), which remains robust when splitting the data by tourist origin (Portugal vs. International) and hotel type (City vs. Resort).
+
+Across the full dataset, package trips are systematically associated with the highest ADR, followed by work and work+rest stays, while weekend trips tend to be the cheapest. This pattern is intuitive: package stays usually include longer durations, higher service levels, and are more common in resort contexts, whereas weekend trips are short and price-sensitive.
+
+When splitting by hotel type, important differences emerge. In city hotels, ADR values are relatively homogeneous across trip types, especially for international tourists, suggesting a more standardized pricing structure driven by business demand and short stays. In contrast, resort hotels show much stronger price differentiation by trip type, with package stays clearly dominating in terms of cost and weekend stays being substantially cheaper. This reflects the seasonal and leisure-oriented nature of resort demand.
+
+Tourist origin further reinforces these patterns. International tourists consistently pay higher ADRs than Portuguese residents for comparable trip types, particularly in city hotels. However, in resort hotels, Portuguese customers exhibit a stronger contrast between low-cost weekend stays and high-cost package holidays, indicating more opportunistic and seasonal booking behavior.
+
+Finally, the statistical results confirm that these differences are not only visually evident but also statistically significant, with moderate to large effect sizes in most comparisons. Overall, trip type acts as a meaningful segmentation variable for pricing strategy, and its interaction with hotel type and tourist origin provides valuable insights for revenue management and targeted marketing.
+
+#### Story 4: Hotel preferences by trip type
+
+To compare hotel preferences across trip types, we visualize the conditional distribution **P(hotel | trip type)**. A 100% stacked bar chart is ideal here because each trip type sums to 100%, making the City vs Resort composition directly comparable across categories.
+
+```{r story4_hotel_preferences}
+ggplot(data = x, aes(x = tipo, fill = hotel)) +
+  geom_bar(position = "fill") +
+  labs(
+    title = "Hotel Type Preference by Trip Type",
+    subtitle = "Composition of hotel choice within each trip type (P(hotel | tipo))",
+    x = "Trip type (tipo)",
+    y = "Proportion",
+    fill = "Hotel type"
+  ) +
+  theme_light() +
+  scale_y_continuous(labels = scales::percent) +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
+  geom_hline(yintercept = 0.5, linetype = "dashed", color = "gray50")
+```
+
+
+Hotel preference may differ between domestic and international tourists even within the same trip type. Splitting the visualization by origin helps identify whether City vs Resort choices are driven mainly by trip purpose (`tipo`) or by traveler origin.
+
+```{r story4_hotel_preferences_origin}
+ggplot(data = x, aes(x = tipo, fill = hotel)) +
+  geom_bar(position = "fill") +
+  facet_wrap(~ origin) +
+  labs(
+    title = "Hotel Type Preference by Trip Type and Origin",
+    subtitle = "City vs Resort composition within each trip type, split by origin",
+    x = "Trip type (tipo)",
+    y = "Proportion",
+    fill = "Hotel type"
+  ) +
+  theme_light() +
+  scale_y_continuous(labels = scales::percent) +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+```
+
+
+To connect hotel preference with booking reliability, we also examine hotel choice by trip type separately for canceled vs non-canceled reservations. This highlights whether certain trip types concentrate cancellations in one hotel category.
+
+```{r story4_hotel_preferences_cancel}
+x <- x %>%
+  mutate(
+    is_canceled_label = factor(
+      is_canceled,
+      levels = c("0", "1"),
+      labels = c("Not canceled", "Canceled")
+    )
+  )
+
+ggplot(data = x, aes(x = tipo, fill = hotel)) +
+  geom_bar(position = "fill") +
+  facet_grid(origin ~ is_canceled_label) +
+  labs(
+    title = "Hotel Type Preference by Trip Type",
+    subtitle = "City vs Resort composition by trip type, split by origin and cancellation status",
+    x = "Trip type (tipo)",
+    y = "Proportion",
+    fill = "Hotel type"
+  ) +
+  scale_y_continuous(labels = scales::percent) +
+  theme_light() +
+  theme(
+    axis.text.x = element_text(angle = 45, hjust = 1),
+    strip.text = element_text(face = "bold")
+  )
+```
+
+
+#### Conclusions: Hotel preferences by trip type
+
+The analysis shows that hotel type preference is strongly driven by trip type, and this relationship remains stable when further segmented by tourist origin and cancellation status.
+
+At an aggregate level, package and rest trips are clearly associated with resort hotels, reflecting their leisure-oriented nature and longer stays. In contrast, work and work+rest trips are predominantly concentrated in city hotels, which aligns with business travel patterns and short, functional stays. Weekend trips occupy an intermediate position but still show a clear preference for city hotels.
+
+When splitting by origin, important behavioral differences emerge. Portuguese tourists exhibit a stronger preference for resort hotels in package and rest trips than international visitors, suggesting that domestic travelers are more likely to use resorts for planned leisure stays. International tourists, on the other hand, rely more heavily on city hotels across most trip types, even for leisure-oriented stays.
+
+Adding cancellation status further refines these insights. Among non-canceled bookings, hotel preferences are more polarized: resort hotels dominate leisure trips, while city hotels dominate work-related trips. In contrast, canceled bookings show a systematic shift toward city hotels, especially for weekend and work trips. This suggests that city hotel bookings—often shorter, more flexible, and business-related—are more prone to cancellation.
+
+Overall, these results indicate that trip type is the primary driver of hotel choice, while origin and cancellation status act as amplifying factors rather than fundamental determinants. From a managerial perspective, this highlights the importance of tailoring pricing, cancellation policies, and marketing strategies jointly by trip purpose and hotel type, rather than relying on origin alone.
+
+```{r}
+write.csv(
+  x,
+  file = "hotel_booking_final.csv",
+  row.names = FALSE
+)
+```
+
+
+##### Violin Graph for Visualization
+
+Since I prefer the way the Violin Graph visualization looks in R to Flourish, I've decided to ask ChatGPT to replicate the Flourish colors in R to create this graph.
+
+```{r final_visualization_violin_graph}
+my_palette <- c(
+  "#FF6B3D",  # naranja
+  "#5A4E63",  # gris oscuro
+  "#C79AA8",  # rosa apagado
+  "#F6C1BD",  # rosa claro
+  "#CFCFCF",  # gris claro
+  "#AEB7C2",  # gris azulado
+  "#C9DADA",  # verde grisáceo
+  "#F5CC66"   # amarillo
+)
+
+x_plot <- x |>
+  dplyr::filter(!is.na(tipo), !is.na(adr)) |>
+  dplyr::mutate(tipo = droplevels(factor(tipo)))
+
+
+ggstatsplot::ggbetweenstats(
+  data = x_plot,
+  x = tipo,
+  y = adr,
+  title = "Average Daily Rate by Trip Type",
+  xlab = "Trip Type",
+  ylab = "Average Daily Rate (€)",
+  pairwise.comparisons = FALSE,
+  pairwise.display = "none",
+  bf.message = FALSE,
+  subtitle = NULL,
+  caption = NULL,
+  ggplot.component = list(
+    ggplot2::scale_fill_manual(values = my_palette),
+    ggplot2::scale_color_manual(values = my_palette),
+    ggplot2::theme_minimal(base_size = 13),
+    ggplot2::theme(
+      plot.caption = ggplot2::element_blank(),
+      plot.subtitle = ggplot2::element_blank()
+    )
+  )
+)
+```
+
+
+Let's apply the ChatGPT plot to spliting by groups one
+
+```{r final_visualization_violin_graph_by_hotel_origin, fig.width=16, fig.height=10}
+plot_panel_vis <- function(df, panel_title) {
+  ggbetweenstats(
+    data = df,
+    x = tipo,
+    y = adr,
+    title = panel_title,
+    xlab = "Trip type (tipo)",
+    ylab = "Average Daily Rate (ADR)",
+    pairwise.comparisons = FALSE,
+    pairwise.display = "none",
+    bf.message = FALSE,
+    subtitle = NULL,
+    caption = NULL,
+    ggplot.component = list(
+      ggplot2::scale_fill_manual(values = my_palette),
+      ggplot2::scale_color_manual(values = my_palette),
+      ggplot2::theme_minimal(base_size = 13),
+      ggplot2::theme(
+        plot.caption = ggplot2::element_blank(),
+        plot.subtitle = ggplot2::element_blank()
+      )
+    )
+  )
+}
+
+# Subsets (4 panels)
+p_city_pt  <- plot_panel_vis(filter(x, hotel == "City Hotel",  origin == "Portugal"),
+                         "City Hotel — Portugal")
+
+p_city_int <- plot_panel_vis(filter(x, hotel == "City Hotel",  origin == "International"),
+                         "City Hotel — International")
+
+p_res_pt   <- plot_panel_vis(filter(x, hotel == "Resort Hotel", origin == "Portugal"),
+                         "Resort Hotel — Portugal")
+
+p_res_int  <- plot_panel_vis(filter(x, hotel == "Resort Hotel", origin == "International"),
+                         "Resort Hotel — International")
+
+# Combine 2x2
+(p_city_pt | p_city_int) /
+(p_res_pt  | p_res_int) +
+  plot_layout(guides = "collect") +
+  plot_annotation(
+    title = "ADR by Trip Type, Split by Origin and Hotel Type",
+    subtitle = "Comparison: (City/Resort) × (Portugal/International)"
+  )
+```
+

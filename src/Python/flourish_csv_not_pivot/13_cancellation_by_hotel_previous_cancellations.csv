@@ -1,0 +1,16 @@
+hotel,previous_cancellations_group,Status,count,percentage
+City Hotel,0 cancellations,Canceled,27986,38.45
+City Hotel,0 cancellations,Not canceled,44801,61.55
+City Hotel,1–2 cancellations,Canceled,4949,95.78
+City Hotel,1–2 cancellations,Not canceled,218,4.22
+City Hotel,3–5 cancellations,Canceled,8,12.31
+City Hotel,3–5 cancellations,Not canceled,57,87.69
+City Hotel,6+ cancellations,Canceled,29,41.43
+City Hotel,6+ cancellations,Not canceled,41,58.57
+Resort Hotel,0 cancellations,Canceled,10116,26.47
+Resort Hotel,0 cancellations,Not canceled,28098,73.53
+Resort Hotel,1–2 cancellations,Canceled,772,82.66
+Resort Hotel,1–2 cancellations,Not canceled,162,17.34
+Resort Hotel,3–5 cancellations,Canceled,17,73.91
+Resort Hotel,3–5 cancellations,Not canceled,6,26.09
+Resort Hotel,6+ cancellations,Canceled,132,100.0

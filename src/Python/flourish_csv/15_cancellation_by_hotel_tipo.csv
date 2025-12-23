@@ -1,0 +1,11 @@
+Hotel,Trip Type,Canceled,Not Canceled,Canceled %,Not Canceled %
+City Hotel,package,62,86,41.89,58.11
+City Hotel,rest,613,454,57.45,42.55
+City Hotel,weekend,1445,3097,31.81,68.19
+City Hotel,work,16163,20720,43.82,56.18
+City Hotel,work+rest,14689,20760,41.44,58.56
+Resort Hotel,package,72,178,28.8,71.2
+Resort Hotel,rest,1130,2598,30.31,69.69
+Resort Hotel,weekend,416,1848,18.37,81.63
+Resort Hotel,work,3197,10410,23.5,76.5
+Resort Hotel,work+rest,6222,13232,31.98,68.02

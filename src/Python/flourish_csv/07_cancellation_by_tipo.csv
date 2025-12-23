@@ -1,0 +1,6 @@
+Trip Type,Canceled,Not Canceled,Canceled %,Not Canceled %
+package,134,264,33.67,66.33
+rest,1743,3052,36.35,63.65
+weekend,1861,4945,27.34,72.66
+work,19360,31130,38.34,61.66
+work+rest,20911,33992,38.09,61.91

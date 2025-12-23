@@ -1,0 +1,7 @@
+Origin,first_time_visitor,Canceled,Not Canceled,Canceled %,Not Canceled %
+International,First-time visitor,16642,53008,23.89,76.11
+Portugal,First-time visitor,27185,17217,61.22,38.78
+International,Returning customer,37,681,5.15,94.85
+Portugal,Returning customer,145,2477,5.53,94.47
+Total,First-time visitor,43827,70225,38.43,61.57
+Total,Returning customer,182,3158,5.45,94.55

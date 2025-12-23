@@ -1,0 +1,5 @@
+hotel,origin,total_bookings,canceled_bookings,cancel_rate,not_canceled_bookings,adr_mean,adr_median
+City Hotel,International,48138,13001,27.01,35137,114.36,108.0
+City Hotel,Portugal,29951,19971,66.68,9980,94.87,90.0
+Resort Hotel,International,22230,3678,16.55,18552,98.01,79.0
+Resort Hotel,Portugal,17073,7359,43.1,9714,95.17,73.8

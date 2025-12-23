@@ -1,0 +1,11 @@
+hotel,tipo,cancel_rate,total,canceled
+City Hotel,package,41.89,148,62
+City Hotel,rest,57.45,1067,613
+City Hotel,weekend,31.81,4542,1445
+City Hotel,work,43.82,36883,16163
+City Hotel,work+rest,41.44,35449,14689
+Resort Hotel,package,28.8,250,72
+Resort Hotel,rest,30.31,3728,1130
+Resort Hotel,weekend,18.37,2264,416
+Resort Hotel,work,23.5,13607,3197
+Resort Hotel,work+rest,31.98,19454,6222

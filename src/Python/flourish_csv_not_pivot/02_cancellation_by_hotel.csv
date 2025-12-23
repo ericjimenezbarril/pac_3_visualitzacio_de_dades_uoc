@@ -1,0 +1,5 @@
+hotel,Status,count,percentage
+City Hotel,Canceled,32972,42.22
+City Hotel,Not canceled,45117,57.78
+Resort Hotel,Canceled,11037,28.08
+Resort Hotel,Not canceled,28266,71.92

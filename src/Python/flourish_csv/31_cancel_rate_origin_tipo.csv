@@ -1,0 +1,11 @@
+origin,tipo,cancel_rate,total,canceled
+International,package,26.94,297,80
+International,rest,24.11,3442,830
+International,weekend,18.23,3780,689
+International,work,22.53,25890,5832
+International,work+rest,25.02,36959,9248
+Portugal,package,53.47,101,54
+Portugal,rest,67.48,1353,913
+Portugal,weekend,38.73,3026,1172
+Portugal,work,54.99,24600,13528
+Portugal,work+rest,65.0,17944,11663

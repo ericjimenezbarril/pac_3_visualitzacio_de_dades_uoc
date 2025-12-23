@@ -1,0 +1,100 @@
+hotel,country,tipo,Status,count,percentage
+City Hotel,DEU,package,Canceled,5,29.41
+City Hotel,DEU,package,Not canceled,12,70.59
+City Hotel,DEU,rest,Canceled,16,18.18
+City Hotel,DEU,rest,Not canceled,72,81.82
+City Hotel,DEU,weekend,Canceled,50,13.89
+City Hotel,DEU,weekend,Not canceled,310,86.11
+City Hotel,DEU,work,Canceled,380,15.07
+City Hotel,DEU,work,Not canceled,2141,84.93
+City Hotel,DEU,work+rest,Canceled,621,20.24
+City Hotel,DEU,work+rest,Not canceled,2447,79.76
+City Hotel,ESP,package,Canceled,4,36.36
+City Hotel,ESP,package,Not canceled,7,63.64
+City Hotel,ESP,rest,Canceled,12,63.16
+City Hotel,ESP,rest,Not canceled,7,36.84
+City Hotel,ESP,weekend,Canceled,49,18.22
+City Hotel,ESP,weekend,Not canceled,220,81.78
+City Hotel,ESP,work,Canceled,604,27.95
+City Hotel,ESP,work,Not canceled,1557,72.05
+City Hotel,ESP,work+rest,Canceled,657,30.99
+City Hotel,ESP,work+rest,Not canceled,1463,69.01
+City Hotel,FRA,package,Canceled,4,25.0
+City Hotel,FRA,package,Not canceled,12,75.0
+City Hotel,FRA,rest,Canceled,36,37.11
+City Hotel,FRA,rest,Not canceled,61,62.89
+City Hotel,FRA,weekend,Canceled,71,17.57
+City Hotel,FRA,weekend,Not canceled,333,82.43
+City Hotel,FRA,work,Canceled,621,18.25
+City Hotel,FRA,work,Not canceled,2781,81.75
+City Hotel,FRA,work+rest,Canceled,989,20.42
+City Hotel,FRA,work+rest,Not canceled,3854,79.58
+City Hotel,GBR,package,Canceled,9,64.29
+City Hotel,GBR,package,Not canceled,5,35.71
+City Hotel,GBR,rest,Canceled,21,44.68
+City Hotel,GBR,rest,Not canceled,26,55.32
+City Hotel,GBR,weekend,Canceled,54,18.24
+City Hotel,GBR,weekend,Not canceled,242,81.76
+City Hotel,GBR,work,Canceled,684,30.81
+City Hotel,GBR,work,Not canceled,1536,69.19
+City Hotel,GBR,work+rest,Canceled,792,29.16
+City Hotel,GBR,work+rest,Not canceled,1924,70.84
+City Hotel,PRT,package,Canceled,10,55.56
+City Hotel,PRT,package,Not canceled,8,44.44
+City Hotel,PRT,rest,Canceled,152,73.43
+City Hotel,PRT,rest,Not canceled,55,26.57
+City Hotel,PRT,weekend,Canceled,844,47.71
+City Hotel,PRT,weekend,Not canceled,925,52.29
+City Hotel,PRT,work,Canceled,11294,65.47
+City Hotel,PRT,work,Not canceled,5957,34.53
+City Hotel,PRT,work+rest,Canceled,7671,71.65
+City Hotel,PRT,work+rest,Not canceled,3035,28.35
+Resort Hotel,DEU,package,Not canceled,7,100.0
+Resort Hotel,DEU,rest,Canceled,27,15.79
+Resort Hotel,DEU,rest,Not canceled,144,84.21
+Resort Hotel,DEU,weekend,Canceled,2,3.64
+Resort Hotel,DEU,weekend,Not canceled,53,96.36
+Resort Hotel,DEU,work,Canceled,46,16.31
+Resort Hotel,DEU,work,Not canceled,236,83.69
+Resort Hotel,DEU,work+rest,Canceled,71,10.49
+Resort Hotel,DEU,work+rest,Not canceled,606,89.51
+Resort Hotel,ESP,package,Canceled,7,43.75
+Resort Hotel,ESP,package,Not canceled,9,56.25
+Resort Hotel,ESP,rest,Canceled,31,28.7
+Resort Hotel,ESP,rest,Not canceled,77,71.3
+Resort Hotel,ESP,weekend,Canceled,14,6.97
+Resort Hotel,ESP,weekend,Not canceled,187,93.03
+Resort Hotel,ESP,work,Canceled,288,17.82
+Resort Hotel,ESP,work,Not canceled,1328,82.18
+Resort Hotel,ESP,work+rest,Canceled,510,25.93
+Resort Hotel,ESP,work+rest,Not canceled,1457,74.07
+Resort Hotel,FRA,package,Canceled,3,33.33
+Resort Hotel,FRA,package,Not canceled,6,66.67
+Resort Hotel,FRA,rest,Canceled,21,14.89
+Resort Hotel,FRA,rest,Not canceled,120,85.11
+Resort Hotel,FRA,weekend,Canceled,1,1.54
+Resort Hotel,FRA,weekend,Not canceled,64,98.46
+Resort Hotel,FRA,work,Canceled,48,9.2
+Resort Hotel,FRA,work,Not canceled,474,90.8
+Resort Hotel,FRA,work+rest,Canceled,138,16.05
+Resort Hotel,FRA,work+rest,Not canceled,722,83.95
+Resort Hotel,GBR,package,Canceled,11,16.67
+Resort Hotel,GBR,package,Not canceled,55,83.33
+Resort Hotel,GBR,rest,Canceled,100,8.58
+Resort Hotel,GBR,rest,Not canceled,1065,91.42
+Resort Hotel,GBR,weekend,Canceled,10,4.74
+Resort Hotel,GBR,weekend,Not canceled,201,95.26
+Resort Hotel,GBR,work,Canceled,245,19.25
+Resort Hotel,GBR,work,Not canceled,1028,80.75
+Resort Hotel,GBR,work+rest,Canceled,525,12.99
+Resort Hotel,GBR,work+rest,Not canceled,3517,87.01
+Resort Hotel,PRT,package,Canceled,44,53.01
+Resort Hotel,PRT,package,Not canceled,39,46.99
+Resort Hotel,PRT,rest,Canceled,761,66.4
+Resort Hotel,PRT,rest,Not canceled,385,33.6
+Resort Hotel,PRT,weekend,Canceled,328,26.09
+Resort Hotel,PRT,weekend,Not canceled,929,73.91
+Resort Hotel,PRT,work,Canceled,2234,30.4
+Resort Hotel,PRT,work,Not canceled,5115,69.6
+Resort Hotel,PRT,work+rest,Canceled,3992,55.15
+Resort Hotel,PRT,work+rest,Not canceled,3246,44.85

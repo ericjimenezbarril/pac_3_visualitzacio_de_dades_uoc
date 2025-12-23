@@ -1,0 +1,9 @@
+Hotel,previous_cancellations_group,Canceled,Not Canceled,Canceled %,Not Canceled %
+City Hotel,0 cancellations,27986,44801,38.45,61.55
+City Hotel,1–2 cancellations,4949,218,95.78,4.22
+City Hotel,3–5 cancellations,8,57,12.31,87.69
+City Hotel,6+ cancellations,29,41,41.43,58.57
+Resort Hotel,0 cancellations,10116,28098,26.47,73.53
+Resort Hotel,1–2 cancellations,772,162,82.66,17.34
+Resort Hotel,3–5 cancellations,17,6,73.91,26.09
+Resort Hotel,6+ cancellations,132,0,100.0,0.0

@@ -1,0 +1,11 @@
+country,Status,count,percentage
+DEU,Canceled,1218,16.81
+DEU,Not canceled,6028,83.19
+ESP,Canceled,2176,25.64
+ESP,Not canceled,6312,74.36
+FRA,Canceled,1932,18.65
+FRA,Not canceled,8427,81.35
+GBR,Canceled,2451,20.34
+GBR,Not canceled,9599,79.66
+PRT,Canceled,27330,58.12
+PRT,Not canceled,19694,41.88

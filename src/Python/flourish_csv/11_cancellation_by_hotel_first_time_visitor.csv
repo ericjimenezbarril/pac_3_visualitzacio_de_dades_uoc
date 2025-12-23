@@ -1,0 +1,5 @@
+Hotel,first_time_visitor,Canceled,Not Canceled,Canceled %,Not Canceled %
+City Hotel,First-time visitor,32868,43854,42.84,57.16
+City Hotel,Returning customer,104,1263,7.61,92.39
+Resort Hotel,First-time visitor,10959,26371,29.36,70.64
+Resort Hotel,Returning customer,78,1895,3.95,96.05

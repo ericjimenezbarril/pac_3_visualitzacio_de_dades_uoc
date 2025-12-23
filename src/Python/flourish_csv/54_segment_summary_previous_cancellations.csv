@@ -1,0 +1,5 @@
+previous_cancellations_group,total_bookings,canceled_bookings,cancel_rate,not_canceled_bookings,adr_mean,adr_median
+0 cancellations,111001,38102,34.33,72899,104.99,96.3
+1–2 cancellations,6101,5721,93.77,380,78.18,69.0
+3–5 cancellations,88,25,28.41,63,65.41,65.0
+6+ cancellations,202,161,79.7,41,62.67,65.0

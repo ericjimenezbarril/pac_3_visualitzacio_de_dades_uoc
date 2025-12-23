@@ -1,0 +1,11 @@
+Origin,Country,Canceled,Not Canceled,Canceled %,Not Canceled %
+International,DEU,1218,6028,16.81,83.19
+International,ESP,2176,6312,25.64,74.36
+International,FRA,1932,8427,18.65,81.35
+International,GBR,2451,9599,20.34,79.66
+Portugal,PRT,27330,19694,58.12,41.88
+Total,DEU,1218,6028,16.81,83.19
+Total,ESP,2176,6312,25.64,74.36
+Total,FRA,1932,8427,18.65,81.35
+Total,GBR,2451,9599,20.34,79.66
+Total,PRT,27330,19694,58.12,41.88

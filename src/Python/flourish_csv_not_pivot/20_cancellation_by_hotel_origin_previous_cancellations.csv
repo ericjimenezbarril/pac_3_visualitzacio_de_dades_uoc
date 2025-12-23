@@ -1,0 +1,41 @@
+hotel,origin,previous_cancellations_group,Status,count,percentage
+City Hotel,International,0 cancellations,Canceled,12983,27.0
+City Hotel,International,0 cancellations,Not canceled,35105,73.0
+City Hotel,Portugal,0 cancellations,Canceled,15003,60.74
+City Hotel,Portugal,0 cancellations,Not canceled,9696,39.26
+City Hotel,International,1–2 cancellations,Canceled,18,48.65
+City Hotel,International,1–2 cancellations,Not canceled,19,51.35
+City Hotel,Portugal,1–2 cancellations,Canceled,4931,96.12
+City Hotel,Portugal,1–2 cancellations,Not canceled,199,3.88
+City Hotel,Portugal,3–5 cancellations,Canceled,8,12.31
+City Hotel,Portugal,3–5 cancellations,Not canceled,57,87.69
+City Hotel,International,6+ cancellations,Not canceled,13,100.0
+City Hotel,Portugal,6+ cancellations,Canceled,29,50.88
+City Hotel,Portugal,6+ cancellations,Not canceled,28,49.12
+Resort Hotel,International,0 cancellations,Canceled,3425,15.59
+Resort Hotel,International,0 cancellations,Not canceled,18538,84.41
+Resort Hotel,Portugal,0 cancellations,Canceled,6691,41.17
+Resort Hotel,Portugal,0 cancellations,Not canceled,9560,58.83
+Resort Hotel,International,1–2 cancellations,Canceled,215,93.89
+Resort Hotel,International,1–2 cancellations,Not canceled,14,6.11
+Resort Hotel,Portugal,1–2 cancellations,Canceled,557,79.01
+Resort Hotel,Portugal,1–2 cancellations,Not canceled,148,20.99
+Resort Hotel,Portugal,3–5 cancellations,Canceled,17,73.91
+Resort Hotel,Portugal,3–5 cancellations,Not canceled,6,26.09
+Resort Hotel,International,6+ cancellations,Canceled,38,100.0
+Resort Hotel,Portugal,6+ cancellations,Canceled,94,100.0
+City Hotel,Total,0 cancellations,Canceled,27986,38.45
+City Hotel,Total,0 cancellations,Not canceled,44801,61.55
+City Hotel,Total,1–2 cancellations,Canceled,4949,95.78
+City Hotel,Total,1–2 cancellations,Not canceled,218,4.22
+City Hotel,Total,3–5 cancellations,Canceled,8,12.31
+City Hotel,Total,3–5 cancellations,Not canceled,57,87.69
+City Hotel,Total,6+ cancellations,Canceled,29,41.43
+City Hotel,Total,6+ cancellations,Not canceled,41,58.57
+Resort Hotel,Total,0 cancellations,Canceled,10116,26.47
+Resort Hotel,Total,0 cancellations,Not canceled,28098,73.53
+Resort Hotel,Total,1–2 cancellations,Canceled,772,82.66
+Resort Hotel,Total,1–2 cancellations,Not canceled,162,17.34
+Resort Hotel,Total,3–5 cancellations,Canceled,17,73.91
+Resort Hotel,Total,3–5 cancellations,Not canceled,6,26.09
+Resort Hotel,Total,6+ cancellations,Canceled,132,100.0

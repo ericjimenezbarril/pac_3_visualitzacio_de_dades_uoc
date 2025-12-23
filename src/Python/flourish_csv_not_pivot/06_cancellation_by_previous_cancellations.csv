@@ -1,0 +1,9 @@
+previous_cancellations_group,Status,count,percentage
+0 cancellations,Canceled,38102,34.33
+0 cancellations,Not canceled,72899,65.67
+1–2 cancellations,Canceled,5721,93.77
+1–2 cancellations,Not canceled,380,6.23
+3–5 cancellations,Canceled,25,28.41
+3–5 cancellations,Not canceled,63,71.59
+6+ cancellations,Canceled,161,79.7
+6+ cancellations,Not canceled,41,20.3

@@ -1,0 +1,17 @@
+first_time_visitor,previous_cancellations_group,Status,count,percentage
+First-time visitor,0 cancellations,Canceled,38039,35.14
+First-time visitor,0 cancellations,Not canceled,70203,64.86
+First-time visitor,1–2 cancellations,Canceled,5639,99.7
+First-time visitor,1–2 cancellations,Not canceled,17,0.3
+First-time visitor,3–5 cancellations,Canceled,8,88.89
+First-time visitor,3–5 cancellations,Not canceled,1,11.11
+First-time visitor,6+ cancellations,Canceled,141,97.24
+First-time visitor,6+ cancellations,Not canceled,4,2.76
+Returning customer,0 cancellations,Canceled,63,2.28
+Returning customer,0 cancellations,Not canceled,2696,97.72
+Returning customer,1–2 cancellations,Canceled,82,18.43
+Returning customer,1–2 cancellations,Not canceled,363,81.57
+Returning customer,3–5 cancellations,Canceled,17,21.52
+Returning customer,3–5 cancellations,Not canceled,62,78.48
+Returning customer,6+ cancellations,Canceled,20,35.09
+Returning customer,6+ cancellations,Not canceled,37,64.91

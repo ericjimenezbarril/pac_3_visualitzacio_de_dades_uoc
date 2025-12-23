@@ -1,0 +1,11 @@
+Hotel,Country,Canceled,Not Canceled,Canceled %,Not Canceled %
+City Hotel,DEU,1072,4982,17.71,82.29
+City Hotel,ESP,1326,3254,28.95,71.05
+City Hotel,FRA,1721,7041,19.64,80.36
+City Hotel,GBR,1560,3733,29.47,70.53
+City Hotel,PRT,19971,9980,66.68,33.32
+Resort Hotel,DEU,146,1046,12.25,87.75
+Resort Hotel,ESP,850,3058,21.75,78.25
+Resort Hotel,FRA,211,1386,13.21,86.79
+Resort Hotel,GBR,891,5866,13.19,86.81
+Resort Hotel,PRT,7359,9714,43.1,56.9

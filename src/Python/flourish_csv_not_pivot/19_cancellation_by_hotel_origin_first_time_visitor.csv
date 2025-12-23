@@ -1,0 +1,25 @@
+hotel,origin,first_time_visitor,Status,count,percentage
+City Hotel,International,First-time visitor,Canceled,12984,27.14
+City Hotel,International,First-time visitor,Not canceled,34850,72.86
+City Hotel,Portugal,First-time visitor,Canceled,19884,68.83
+City Hotel,Portugal,First-time visitor,Not canceled,9004,31.17
+City Hotel,International,Returning customer,Canceled,17,5.59
+City Hotel,International,Returning customer,Not canceled,287,94.41
+City Hotel,Portugal,Returning customer,Canceled,87,8.18
+City Hotel,Portugal,Returning customer,Not canceled,976,91.82
+Resort Hotel,International,First-time visitor,Canceled,3658,16.77
+Resort Hotel,International,First-time visitor,Not canceled,18158,83.23
+Resort Hotel,Portugal,First-time visitor,Canceled,7301,47.06
+Resort Hotel,Portugal,First-time visitor,Not canceled,8213,52.94
+Resort Hotel,International,Returning customer,Canceled,20,4.83
+Resort Hotel,International,Returning customer,Not canceled,394,95.17
+Resort Hotel,Portugal,Returning customer,Canceled,58,3.72
+Resort Hotel,Portugal,Returning customer,Not canceled,1501,96.28
+City Hotel,Total,First-time visitor,Canceled,32868,42.84
+City Hotel,Total,First-time visitor,Not canceled,43854,57.16
+City Hotel,Total,Returning customer,Canceled,104,7.61
+City Hotel,Total,Returning customer,Not canceled,1263,92.39
+Resort Hotel,Total,First-time visitor,Canceled,10959,29.36
+Resort Hotel,Total,First-time visitor,Not canceled,26371,70.64
+Resort Hotel,Total,Returning customer,Canceled,78,3.95
+Resort Hotel,Total,Returning customer,Not canceled,1895,96.05

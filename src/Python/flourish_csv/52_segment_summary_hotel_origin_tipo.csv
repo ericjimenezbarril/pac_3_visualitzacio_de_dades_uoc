@@ -1,0 +1,21 @@
+hotel,origin,tipo,total_bookings,canceled_bookings,cancel_rate,not_canceled_bookings,adr_mean,adr_median
+City Hotel,International,package,130,52,40.0,78,116.7,107.82
+City Hotel,International,rest,860,461,53.6,399,116.18,107.19
+City Hotel,International,weekend,2773,601,21.67,2172,112.98,107.1
+City Hotel,International,work,19632,4869,24.8,14763,116.28,110.0
+City Hotel,International,work+rest,24743,7018,28.36,17725,112.92,107.1
+City Hotel,Portugal,package,18,10,55.56,8,113.16,99.44
+City Hotel,Portugal,rest,207,152,73.43,55,97.39,90.0
+City Hotel,Portugal,weekend,1769,844,47.71,925,97.59,91.33
+City Hotel,Portugal,work,17251,11294,65.47,5957,93.99,90.0
+City Hotel,Portugal,work+rest,10706,7671,71.65,3035,95.75,90.0
+Resort Hotel,International,package,167,28,16.77,139,121.97,104.85
+Resort Hotel,International,rest,2582,369,14.29,2213,98.89,83.76
+Resort Hotel,International,weekend,1007,88,8.74,919,89.26,72.9
+Resort Hotel,International,work,6258,963,15.39,5295,95.88,75.0
+Resort Hotel,International,work+rest,12216,2230,18.25,9986,99.3,79.9
+Resort Hotel,Portugal,package,83,44,53.01,39,137.5,135.0
+Resort Hotel,Portugal,rest,1146,761,66.4,385,113.63,105.12
+Resort Hotel,Portugal,weekend,1257,328,26.09,929,78.52,60.0
+Resort Hotel,Portugal,work,7349,2234,30.4,5115,81.03,63.0
+Resort Hotel,Portugal,work+rest,7238,3992,55.15,3246,109.01,86.0

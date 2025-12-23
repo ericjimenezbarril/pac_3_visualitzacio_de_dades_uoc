@@ -1,0 +1,13 @@
+origin,first_time_visitor,Status,count,percentage
+International,First-time visitor,Canceled,16642,23.89
+International,First-time visitor,Not canceled,53008,76.11
+Portugal,First-time visitor,Canceled,27185,61.22
+Portugal,First-time visitor,Not canceled,17217,38.78
+International,Returning customer,Canceled,37,5.15
+International,Returning customer,Not canceled,681,94.85
+Portugal,Returning customer,Canceled,145,5.53
+Portugal,Returning customer,Not canceled,2477,94.47
+Total,First-time visitor,Canceled,43827,38.43
+Total,First-time visitor,Not canceled,70225,61.57
+Total,Returning customer,Canceled,182,5.45
+Total,Returning customer,Not canceled,3158,94.55

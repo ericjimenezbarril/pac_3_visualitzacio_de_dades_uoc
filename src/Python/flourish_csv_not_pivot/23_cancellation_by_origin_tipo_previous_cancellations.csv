@@ -1,0 +1,87 @@
+origin,tipo,previous_cancellations_group,Status,count,percentage
+International,package,0 cancellations,Canceled,80,26.94
+International,package,0 cancellations,Not canceled,217,73.06
+Portugal,package,0 cancellations,Canceled,50,51.55
+Portugal,package,0 cancellations,Not canceled,47,48.45
+Portugal,package,1–2 cancellations,Canceled,4,100.0
+International,rest,0 cancellations,Canceled,809,23.65
+International,rest,0 cancellations,Not canceled,2612,76.35
+Portugal,rest,0 cancellations,Canceled,823,65.63
+Portugal,rest,0 cancellations,Not canceled,431,34.37
+International,rest,1–2 cancellations,Canceled,21,100.0
+Portugal,rest,1–2 cancellations,Canceled,87,92.55
+Portugal,rest,1–2 cancellations,Not canceled,7,7.45
+Portugal,rest,3–5 cancellations,Canceled,3,60.0
+Portugal,rest,3–5 cancellations,Not canceled,2,40.0
+International,weekend,0 cancellations,Canceled,687,18.19
+International,weekend,0 cancellations,Not canceled,3090,81.81
+Portugal,weekend,0 cancellations,Canceled,928,33.97
+Portugal,weekend,0 cancellations,Not canceled,1804,66.03
+International,weekend,1–2 cancellations,Canceled,2,66.67
+International,weekend,1–2 cancellations,Not canceled,1,33.33
+Portugal,weekend,1–2 cancellations,Canceled,216,83.4
+Portugal,weekend,1–2 cancellations,Not canceled,43,16.6
+Portugal,weekend,3–5 cancellations,Canceled,1,16.67
+Portugal,weekend,3–5 cancellations,Not canceled,5,83.33
+Portugal,weekend,6+ cancellations,Canceled,27,93.1
+Portugal,weekend,6+ cancellations,Not canceled,2,6.9
+International,work,0 cancellations,Canceled,5730,22.24
+International,work,0 cancellations,Not canceled,20031,77.76
+Portugal,work,0 cancellations,Canceled,10505,49.37
+Portugal,work,0 cancellations,Not canceled,10774,50.63
+International,work,1–2 cancellations,Canceled,102,84.3
+International,work,1–2 cancellations,Not canceled,19,15.7
+Portugal,work,1–2 cancellations,Canceled,2958,92.41
+Portugal,work,1–2 cancellations,Not canceled,243,7.59
+Portugal,work,3–5 cancellations,Canceled,12,25.53
+Portugal,work,3–5 cancellations,Not canceled,35,74.47
+International,work,6+ cancellations,Not canceled,8,100.0
+Portugal,work,6+ cancellations,Canceled,53,72.6
+Portugal,work,6+ cancellations,Not canceled,20,27.4
+International,work+rest,0 cancellations,Canceled,9102,24.74
+International,work+rest,0 cancellations,Not canceled,27693,75.26
+Portugal,work+rest,0 cancellations,Canceled,9388,60.23
+Portugal,work+rest,0 cancellations,Not canceled,6200,39.77
+International,work+rest,1–2 cancellations,Canceled,108,89.26
+International,work+rest,1–2 cancellations,Not canceled,13,10.74
+Portugal,work+rest,1–2 cancellations,Canceled,2223,97.63
+Portugal,work+rest,1–2 cancellations,Not canceled,54,2.37
+Portugal,work+rest,3–5 cancellations,Canceled,9,30.0
+Portugal,work+rest,3–5 cancellations,Not canceled,21,70.0
+International,work+rest,6+ cancellations,Canceled,38,88.37
+International,work+rest,6+ cancellations,Not canceled,5,11.63
+Portugal,work+rest,6+ cancellations,Canceled,43,87.76
+Portugal,work+rest,6+ cancellations,Not canceled,6,12.24
+Total,package,0 cancellations,Canceled,130,32.99
+Total,package,0 cancellations,Not canceled,264,67.01
+Total,package,1–2 cancellations,Canceled,4,100.0
+Total,rest,0 cancellations,Canceled,1632,34.91
+Total,rest,0 cancellations,Not canceled,3043,65.09
+Total,rest,1–2 cancellations,Canceled,108,93.91
+Total,rest,1–2 cancellations,Not canceled,7,6.09
+Total,rest,3–5 cancellations,Canceled,3,60.0
+Total,rest,3–5 cancellations,Not canceled,2,40.0
+Total,weekend,0 cancellations,Canceled,1615,24.81
+Total,weekend,0 cancellations,Not canceled,4894,75.19
+Total,weekend,1–2 cancellations,Canceled,218,83.21
+Total,weekend,1–2 cancellations,Not canceled,44,16.79
+Total,weekend,3–5 cancellations,Canceled,1,16.67
+Total,weekend,3–5 cancellations,Not canceled,5,83.33
+Total,weekend,6+ cancellations,Canceled,27,93.1
+Total,weekend,6+ cancellations,Not canceled,2,6.9
+Total,work,0 cancellations,Canceled,16235,34.51
+Total,work,0 cancellations,Not canceled,30805,65.49
+Total,work,1–2 cancellations,Canceled,3060,92.11
+Total,work,1–2 cancellations,Not canceled,262,7.89
+Total,work,3–5 cancellations,Canceled,12,25.53
+Total,work,3–5 cancellations,Not canceled,35,74.47
+Total,work,6+ cancellations,Canceled,53,65.43
+Total,work,6+ cancellations,Not canceled,28,34.57
+Total,work+rest,0 cancellations,Canceled,18490,35.3
+Total,work+rest,0 cancellations,Not canceled,33893,64.7
+Total,work+rest,1–2 cancellations,Canceled,2331,97.21
+Total,work+rest,1–2 cancellations,Not canceled,67,2.79
+Total,work+rest,3–5 cancellations,Canceled,9,30.0
+Total,work+rest,3–5 cancellations,Not canceled,21,70.0
+Total,work+rest,6+ cancellations,Canceled,81,88.04
+Total,work+rest,6+ cancellations,Not canceled,11,11.96

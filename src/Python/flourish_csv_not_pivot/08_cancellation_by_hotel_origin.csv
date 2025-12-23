@@ -1,0 +1,13 @@
+hotel,origin,Status,count,percentage
+City Hotel,International,Canceled,13001,27.01
+City Hotel,International,Not canceled,35137,72.99
+City Hotel,Portugal,Canceled,19971,66.68
+City Hotel,Portugal,Not canceled,9980,33.32
+Resort Hotel,International,Canceled,3678,16.55
+Resort Hotel,International,Not canceled,18552,83.45
+Resort Hotel,Portugal,Canceled,7359,43.1
+Resort Hotel,Portugal,Not canceled,9714,56.9
+City Hotel,Total,Canceled,32972,42.22
+City Hotel,Total,Not canceled,45117,57.78
+Resort Hotel,Total,Canceled,11037,28.08
+Resort Hotel,Total,Not canceled,28266,71.92
